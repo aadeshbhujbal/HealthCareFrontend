@@ -17,7 +17,7 @@ export default function Home() {
     <DesignSystemProvider>
       <div className="container mx-auto p-4">
         <YStack space={20} padding={16} maxWidth={800} marginHorizontal="auto">
-          <Text fontSize={24} fontWeight="bold">
+          <Text fontSize={24} fontWeight="bold" className="!text-red-500">
             Tamagui Components Demo
           </Text>
 

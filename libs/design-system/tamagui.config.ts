@@ -4,13 +4,20 @@ import { shorthands } from '@tamagui/shorthands'
 import { themes, tokens } from '@tamagui/themes'
 import { createAnimations } from '@tamagui/animations-react-native'
 
+// Define specific size values for our tokens
+const sizeTokens = {
+  small: 14,
+  medium: 18,
+  large: 24,
+}
+
 // Create proper font configurations
 const headingFont = createInterFont({
   size: {
     // Define your font sizes with named keys
-    small: 14,
-    medium: 18,
-    large: 24,
+    small: sizeTokens.small,
+    medium: sizeTokens.medium,
+    large: sizeTokens.large,
     // Keep the numeric keys for compatibility
     1: 12,
     2: 14,
@@ -44,9 +51,9 @@ const headingFont = createInterFont({
 const bodyFont = createInterFont({
   size: {
     // Define your font sizes with named keys
-    small: 14,
-    medium: 16,
-    large: 20,
+    small: sizeTokens.small,
+    medium: sizeTokens.medium,
+    large: sizeTokens.large,
     // Keep the numeric keys for compatibility
     1: 12,
     2: 14,
@@ -84,15 +91,18 @@ const animations = createAnimations({
   },
 })
 
+// Create a custom size tokens object that includes our named sizes
+const sizeTokensWithNamedSizes = {
+  ...tokens.size,
+  small: sizeTokens.small,
+  medium: sizeTokens.medium,
+  large: sizeTokens.large,
+}
+
 // Customize tokens to include named sizes
 const customTokens = {
   ...tokens,
-  size: {
-    ...tokens.size,
-    small: 14,
-    medium: 18,
-    large: 24,
-  },
+  size: sizeTokensWithNamedSizes,
 }
 
 const config = createTamagui({
