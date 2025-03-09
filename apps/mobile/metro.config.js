@@ -1,5 +1,6 @@
 const { withNxMetro } = require('@nx/expo');
 const { getDefaultConfig } = require('@expo/metro-config');
+const { withNativeWind } = require('nativewind/metro');
 const { mergeConfig } = require('metro-config');
 
 const defaultConfig = getDefaultConfig(__dirname);
@@ -19,15 +20,16 @@ const customConfig = {
   resolver: {
     assetExts: assetExts.filter((ext) => ext !== 'svg'),
     sourceExts: [...sourceExts, 'cjs', 'mjs', 'svg'],
+    extraNodeModules: {
+      'apps/mobile': __dirname,
+    },
   },
+  watchFolders: [__dirname],
 };
 
+// Combine Nx and NativeWind
 module.exports = withNxMetro(mergeConfig(defaultConfig, customConfig), {
-  // Change this to true to see debugging info.
-  // Useful if you have issues resolving modules
   debug: false,
-  // all the file extensions used for imports other than 'ts', 'tsx', 'js', 'jsx', 'json'
   extensions: [],
-  // Specify folders to watch, in addition to Nx defaults (workspace libraries and node_modules)
   watchFolders: [],
-});
+}).then((config) => withNativeWind(config, { input: './global.css' }));

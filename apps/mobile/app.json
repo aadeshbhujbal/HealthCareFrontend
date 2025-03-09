@@ -4,7 +4,9 @@
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
     "icon": "./assets/icon.png",
+    "entryPoint": "./index.js",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -27,6 +29,7 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
+
     "plugins": []
   }
 }
