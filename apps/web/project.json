@@ -12,6 +12,12 @@
         "buildTarget": "web:build",
         "dev": true
       }
+    },
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "options": {
+        "webpackConfig": "libs/design-system/webpack-plugin.js"
+      }
     }
   }
 }

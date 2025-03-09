@@ -1,4 +1,5 @@
 import './global.css';
+import { DesignSystemProvider } from 'libs/design-system/src';
 
 export const metadata = {
   title: 'Welcome to web',
@@ -12,7 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <DesignSystemProvider>{children}</DesignSystemProvider>
+      </body>
     </html>
   );
 }

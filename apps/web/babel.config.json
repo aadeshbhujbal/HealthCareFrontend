@@ -1,0 +1,16 @@
+{
+  "presets": ["@nx/next/babel"],
+  "plugins": [
+    ["@babel/plugin-transform-react-jsx"],
+    ["babel-plugin-transform-inline-environment-variables"],
+    [
+      "@tamagui/babel-plugin",
+      {
+        "config": "../../libs/design-system/src/tamagui.config.ts",
+        "components": ["tamagui", "libs/design-system/src"],
+        "logTimings": true,
+        "disableExtraction": false
+      }
+    ]
+  ]
+}
