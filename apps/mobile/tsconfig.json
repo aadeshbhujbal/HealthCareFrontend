@@ -9,7 +9,8 @@
     "resolveJsonModule": true,
     "strict": true,
     "declaration": true,
-    "types": ["nativewind"]
+    "types": ["nativewind"],
+    "composite": true
   },
   "files": [],
   "include": ["nativewind-env.d.ts"],

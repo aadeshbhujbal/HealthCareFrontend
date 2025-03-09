@@ -26574,10 +26574,10 @@ var require_dist = __commonJS({
   }
 });
 
-// ../../libs/design-system/src/tamagui.config.ts
+// tamagui.config.ts
 var tamagui_config_exports = {};
 __export(tamagui_config_exports, {
-  default: () => tamagui_config_default
+  default: () => tamagui_config_default2
 });
 module.exports = __toCommonJS(tamagui_config_exports);
 
@@ -48162,10 +48162,14 @@ function getValue(input, isColor = false) {
 }
 __name(getValue, "getValue");
 
-// ../../libs/design-system/src/tamagui.config.ts
+// ../../libs/design-system/tamagui.config.ts
 var headingFont = createInterFont({
   size: {
-    // Define your font sizes
+    // Define your font sizes with named keys
+    small: 14,
+    medium: 18,
+    large: 24,
+    // Keep the numeric keys for compatibility
     1: 12,
     2: 14,
     3: 16,
@@ -48195,6 +48199,11 @@ var headingFont = createInterFont({
 });
 var bodyFont = createInterFont({
   size: {
+    // Define your font sizes with named keys
+    small: 14,
+    medium: 16,
+    large: 20,
+    // Keep the numeric keys for compatibility
     1: 12,
     2: 14,
     3: 16,
@@ -48230,41 +48239,11 @@ var animations = createAnimations({
 });
 var customTokens = {
   ...tokens,
-  color: {
-    ...tokens.color,
-    primary: "#3B82F6",
-    secondary: "#6B7280",
-    success: "#10B981",
-    warning: "#F59E0B",
-    danger: "#EF4444",
-    info: "#3B82F6",
-    red: "#EF4444",
-    green: "#10B981",
-    blue: "#3B82F6",
-    yellow: "#F59E0B",
-    gray50: "#F9FAFB",
-    gray100: "#F3F4F6",
-    gray200: "#E5E7EB",
-    gray300: "#D1D5DB",
-    gray400: "#9CA3AF",
-    gray500: "#6B7280",
-    gray600: "#4B5563",
-    gray700: "#374151",
-    gray800: "#1F2937",
-    gray900: "#111827"
-  }
-};
-var customThemes = {
-  ...themes,
-  light: {
-    ...themes.light,
-    background: "#FFFFFF",
-    color: "#000000"
-  },
-  dark: {
-    ...themes.dark,
-    background: "#121212",
-    color: "#FFFFFF"
+  size: {
+    ...tokens.size,
+    small: 14,
+    medium: 18,
+    large: 24
   }
 };
 var config = createTamagui({
@@ -48277,10 +48256,13 @@ var config = createTamagui({
     heading: headingFont,
     body: bodyFont
   },
-  themes: customThemes,
+  themes,
   tokens: customTokens
 });
 var tamagui_config_default = config;
+
+// tamagui.config.ts
+var tamagui_config_default2 = tamagui_config_default;
 /*! Bundled license information:
 
 object-assign/index.js:

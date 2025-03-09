@@ -1,5 +1,5 @@
 import './global.css';
-import { DesignSystemProvider } from 'libs/design-system/src';
+import { DesignSystemProvider } from '@healthcare/design-system';
 
 export const metadata = {
   title: 'Welcome to web',

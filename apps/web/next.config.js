@@ -1,34 +1,22 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { composePlugins, withNx } = require('@nx/next');
 const { withTamagui } = require('@tamagui/next-plugin');
+const path = require('path');
 
 const tamaguiConfig = {
-  config: '../../libs/design-system/src/tamagui.config.ts',
-  components: ['tamagui', '../../libs/design-system/src'],
-  excludeReactNativeWebExports: [
-    'Switch',
-    'ProgressBar',
-    'Picker',
-    'CheckBox',
-    'Touchable',
-    'Animated',
-    'FlatList',
-    'Modal',
-  ],
-  logTimings: true,
+  config: './tamagui.config.ts',
+  components: ['tamagui'],
   disableExtraction: process.env.NODE_ENV === 'development',
-  useReactNativeWebLite: false,
-  platform: 'web',
 };
 
-const plugins = [withNx, withTamagui(tamaguiConfig)];
-
-module.exports = composePlugins(...plugins)({
+module.exports = composePlugins(
+  withNx,
+  withTamagui(tamaguiConfig)
+)({
   nx: {
     svgr: false,
   },
   reactStrictMode: true,
-  swcMinify: true,
   transpilePackages: [
     'react-native',
     'react-native-web',
@@ -41,16 +29,21 @@ module.exports = composePlugins(...plugins)({
   ],
   experimental: {
     forceSwcTransforms: true,
-    swcTraceProfiling: true,
     scrollRestoration: true,
   },
-  // Use this instead of serverComponentsExternalPackages
   serverExternalPackages: ['tamagui'],
   webpack: (config) => {
-    // Add any webpack customizations here
+    // Add path alias for @healthcare/design-system
     config.resolve.alias = {
-      ...(config.resolve.alias || {}),
-      // Add any aliases needed
+      ...config.resolve.alias,
+      '@healthcare/design-system': path.resolve(
+        __dirname,
+        '../../libs/design-system'
+      ),
+      '@healthcare/design-system/tamagui.config': path.resolve(
+        __dirname,
+        '../../libs/design-system/tamagui.config'
+      ),
     };
     return config;
   },

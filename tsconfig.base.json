@@ -14,8 +14,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "strict": true,
     "paths": {
-      "@health-care-frontend/design-system": ["libs/design-system/src/index.ts"]
+      "@healthcare/design-system": ["libs/design-system/src/index.ts"],
+      "@healthcare/design-system/*": ["libs/design-system/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

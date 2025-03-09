@@ -1,5 +1,5 @@
-export * from './lib/design-system';
-export * from './lib/provider';
+export * from './design-system';
+export * from './provider';
 // Export Tamagui components that you want to use across your apps
 export { 
   Button as TamaguiButton, 
@@ -11,10 +11,10 @@ export {
 } from 'tamagui';
 
 // Export your custom components
-export * from './lib/components/Button';
-export * from './lib/components/Card';
-export * from './lib/components/Input';
-export * from './lib/components/AppCard';
+export * from './components/Button';
+export * from './components/Card';
+export * from './components/Input';
+export * from './components/AppCard';
 
 // Export your tamagui config
-export { default as tamaguiConfig } from './tamagui.config';
+export { default as tamaguiConfig } from '../tamagui.config';

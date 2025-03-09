@@ -10,7 +10,7 @@ import {
   Input,
   AppCard,
   AppCardHeader,
-} from 'libs/design-system/src';
+} from '@healthcare/design-system';
 
 export default function Home() {
   return (

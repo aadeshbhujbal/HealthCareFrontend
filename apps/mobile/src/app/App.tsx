@@ -20,7 +20,7 @@ import {
   Input,
   AppCard,
   AppCardHeader,
-} from 'libs/design-system/src';
+} from '@healthcare/design-system';
 
 export const App = () => {
   const [whatsNextYCoord, setWhatsNextYCoord] = useState<number>(0);
@@ -42,7 +42,13 @@ export const App = () => {
               </Text>
               <XStack space={10} flexWrap="wrap">
                 <Button>Default Button</Button>
-                <Button variant="secondary">Secondary</Button>
+                <Button
+                  variant="secondary"
+                  color="white"
+                  backgroundColor="blue"
+                >
+                  Secondary
+                </Button>
                 <Button variant="danger">Danger</Button>
               </XStack>
               <XStack space={10} flexWrap="wrap">

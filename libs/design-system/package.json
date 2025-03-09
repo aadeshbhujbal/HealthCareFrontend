@@ -1,14 +1,5 @@
 {
   "name": "@healthcareapp/design-system",
   "version": "0.1.0",
-  "private": true,
-  "main": "src/index.ts",
-  "dependencies": {
-    "tamagui": "*",
-    "@tamagui/core": "*",
-    "@tamagui/themes": "*",
-    "@tamagui/shorthands": "*",
-    "@tamagui/font-inter": "*",
-    "@tamagui/animations-react-native": "*"
-  }
+  "private": true
 }

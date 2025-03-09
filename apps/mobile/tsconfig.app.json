@@ -5,6 +5,13 @@
     "types": ["node"]
   },
   "files": ["../../node_modules/@nx/expo/typings/svg.d.ts"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    "../../libs/design-system/src/**/*"
+  ],
   "exclude": [
     "**/*.test.ts",
     "**/*.spec.ts",
@@ -15,6 +22,5 @@
     "**/*.test.jsx",
     "**/*.spec.jsx",
     "src/test-setup.ts"
-  ],
-  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
+  ]
 }
