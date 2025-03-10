@@ -29,7 +29,24 @@ module.exports = composePlugins(
   experimental: {
     forceSwcTransforms: true,
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
+    // Configure CSS handling
+    const rules = config.module.rules;
+    const cssRuleIndex = rules.findIndex(
+      (rule) => rule.test && rule.test.toString().includes('css')
+    );
+
+    if (cssRuleIndex !== -1) {
+      // Remove the existing CSS rule
+      rules.splice(cssRuleIndex, 1);
+    }
+
+    // Add a new rule for CSS files
+    rules.push({
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader'],
+    });
+
     config.resolve.alias = {
       ...config.resolve.alias,
       'react-native$': 'react-native-web',

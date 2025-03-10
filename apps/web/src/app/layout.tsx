@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { NextTamaguiProvider } from './NextTamaguiProvider';
-import './global.css';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Healthcare App',

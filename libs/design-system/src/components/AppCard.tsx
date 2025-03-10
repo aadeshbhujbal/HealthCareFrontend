@@ -1,5 +1,5 @@
 import { styled, Text, XStack, YStack } from 'tamagui';
-import { Card } from './Card';
+import { Card } from './shared/Card';
 
 export const AppCard = styled(Card, {
   name: 'AppCard',
@@ -10,10 +10,10 @@ export const AppCard = styled(Card, {
       true: {
         pressStyle: {
           opacity: 0.8,
-          scale: 0.98,
+          transform: 'scale(0.98)',
         },
         hoverStyle: {
-          backgroundColor: '$gray50',
+          backgroundColor: '#F9FAFB',
         },
       },
     },
@@ -38,7 +38,7 @@ export const AppCardHeader = ({
           {title}
         </Text>
         {subtitle && (
-          <Text fontSize={14} color="$gray700">
+          <Text fontSize={14} color="#374151">
             {subtitle}
           </Text>
         )}

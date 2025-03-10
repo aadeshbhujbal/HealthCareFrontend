@@ -906,21 +906,21 @@ var require_constants = __commonJS({
       isIos: /* @__PURE__ */ __name(() => isIos2, "isIos"),
       isServer: /* @__PURE__ */ __name(() => isServer3, "isServer"),
       isTouchable: /* @__PURE__ */ __name(() => isTouchable3, "isTouchable"),
-      isWeb: /* @__PURE__ */ __name(() => isWeb8, "isWeb"),
+      isWeb: /* @__PURE__ */ __name(() => isWeb7, "isWeb"),
       isWebTouchable: /* @__PURE__ */ __name(() => isWebTouchable3, "isWebTouchable"),
       isWindowDefined: /* @__PURE__ */ __name(() => isWindowDefined2, "isWindowDefined"),
       useIsomorphicLayoutEffect: /* @__PURE__ */ __name(() => useIsomorphicLayoutEffect3, "useIsomorphicLayoutEffect")
     });
     module2.exports = __toCommonJS2(constants_exports);
     var import_react58 = require("react");
-    var isWeb8 = true;
+    var isWeb7 = true;
     var isWindowDefined2 = typeof window < "u";
-    var isServer3 = isWeb8 && !isWindowDefined2;
-    var isClient4 = isWeb8 && isWindowDefined2;
+    var isServer3 = isWeb7 && !isWindowDefined2;
+    var isClient4 = isWeb7 && isWindowDefined2;
     var useIsomorphicLayoutEffect3 = isServer3 ? import_react58.useEffect : import_react58.useLayoutEffect;
     var isChrome3 = typeof navigator < "u" && /Chrome/.test(navigator.userAgent || "");
     var isWebTouchable3 = isClient4 && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
-    var isTouchable3 = !isWeb8 || isWebTouchable3;
+    var isTouchable3 = !isWeb7 || isWebTouchable3;
     var isAndroid6 = false;
     var isIos2 = process.env.TEST_NATIVE_PLATFORM === "ios";
     var currentPlatform2 = "web";
@@ -1745,14 +1745,14 @@ var require_Collapsible = __commonJS({
     var import_animate_presence6 = require_cjs4();
     var import_helpers29 = require_cjs7();
     var import_use_controllable_state16 = require_cjs10();
-    var import_web26 = require("@tamagui/core");
+    var import_web27 = require("@tamagui/core");
     var React84 = __toESM2(require("react"));
     var import_jsx_runtime70 = require("react/jsx-runtime");
     var COLLAPSIBLE_NAME = "Collapsible";
     var {
       Provider: CollapsibleProvider,
       useStyledContext: useCollapsibleContext
-    } = (0, import_web26.createStyledContext)();
+    } = (0, import_web27.createStyledContext)();
     var _Collapsible = React84.forwardRef((props, forwardedRef) => {
       const {
         __scopeCollapsible,
@@ -1772,7 +1772,7 @@ var require_Collapsible = __commonJS({
         contentId: React84.useId(),
         open,
         onOpenToggle: React84.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen]),
-        children: /* @__PURE__ */ (0, import_jsx_runtime70.jsx)(import_web26.Stack, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime70.jsx)(import_web27.Stack, {
           "data-state": getState6(open),
           "data-disabled": disabled ? "" : void 0,
           ...collapsibleProps,
@@ -1782,7 +1782,7 @@ var require_Collapsible = __commonJS({
     });
     _Collapsible.displayName = COLLAPSIBLE_NAME;
     var TRIGGER_NAME6 = "CollapsibleTrigger";
-    var CollapsibleTriggerFrame = (0, import_web26.styled)(import_web26.Stack, {
+    var CollapsibleTriggerFrame = (0, import_web27.styled)(import_web27.Stack, {
       name: TRIGGER_NAME6,
       tag: "button"
     });
@@ -1808,7 +1808,7 @@ var require_Collapsible = __commonJS({
     });
     CollapsibleTrigger.displayName = TRIGGER_NAME6;
     var CONTENT_NAME5 = "CollapsibleContent";
-    var CollapsibleContentFrame = (0, import_web26.styled)(import_web26.Stack, {
+    var CollapsibleContentFrame = (0, import_web27.styled)(import_web27.Stack, {
       name: CONTENT_NAME5
     });
     var CollapsibleContent = CollapsibleContentFrame.styleable((props, forwardedRef) => {
@@ -2122,17 +2122,17 @@ var require_getElevation = __commonJS({
     var getElevation2 = /* @__PURE__ */ __name((size6, extras) => {
       if (!size6) return;
       const {
-        tokens: tokens2
-      } = extras, token = tokens2.size[size6], sizeNum = (0, import_core57.isVariable)(token) ? +token.val : size6;
+        tokens: tokens3
+      } = extras, token = tokens3.size[size6], sizeNum = (0, import_core57.isVariable)(token) ? +token.val : size6;
       return getSizedElevation2(sizeNum, extras);
     }, "getElevation");
     var getSizedElevation2 = /* @__PURE__ */ __name((val, {
       theme,
-      tokens: tokens2
+      tokens: tokens3
     }) => {
       let num = 0;
       if (val === true) {
-        const val2 = (0, import_core57.getVariableValue)(tokens2.size.true);
+        const val2 = (0, import_core57.getVariableValue)(tokens3.size.true);
         typeof val2 == "number" ? num = val2 : num = 10;
       } else num = +val;
       if (num === 0) return;
@@ -2260,7 +2260,7 @@ var require_cjs14 = __commonJS({
       stepTokenUpOrDown: /* @__PURE__ */ __name(() => stepTokenUpOrDown2, "stepTokenUpOrDown")
     });
     module2.exports = __toCommonJS2(index_exports);
-    var import_web26 = require("@tamagui/core");
+    var import_web27 = require("@tamagui/core");
     var defaultOptions2 = {
       shift: 0,
       bounds: [0]
@@ -2273,21 +2273,21 @@ var require_cjs14 = __commonJS({
     var cacheKeys2 = {};
     var cacheWholeKeys2 = {};
     var stepTokenUpOrDown2 = /* @__PURE__ */ __name((type, current, options = defaultOptions2) => {
-      const tokens2 = (0, import_web26.getTokens)({
+      const tokens3 = (0, import_web27.getTokens)({
         prefixed: true
       })[type];
       if (!(type in cacheVariables2)) {
         cacheKeys2[type] = [], cacheVariables2[type] = [], cacheWholeKeys2[type] = [], cacheWholeVariables2[type] = [];
-        const sorted = Object.keys(tokens2).map((k) => tokens2[k]).sort((a, b) => a.val - b.val);
+        const sorted = Object.keys(tokens3).map((k) => tokens3[k]).sort((a, b) => a.val - b.val);
         for (const token of sorted) cacheKeys2[type].push(token.key), cacheVariables2[type].push(token);
         const sortedExcludingHalfSteps = sorted.filter((x) => !x.key.endsWith(".5"));
         for (const token of sortedExcludingHalfSteps) cacheWholeKeys2[type].push(token.key), cacheWholeVariables2[type].push(token);
       }
       const isString = typeof current == "string", tokensOrdered = (options.excludeHalfSteps ? isString ? cacheWholeKeys2 : cacheWholeVariables2 : isString ? cacheKeys2 : cacheVariables2)[type], min2 = options.bounds?.[0] ?? 0, max2 = options.bounds?.[1] ?? tokensOrdered.length - 1, currentIndex = tokensOrdered.indexOf(current);
       let shift5 = options.shift || 0;
-      shift5 && (current === "$true" || (0, import_web26.isVariable)(current) && current.name === "true") && (shift5 += shift5 > 0 ? 1 : -1);
+      shift5 && (current === "$true" || (0, import_web27.isVariable)(current) && current.name === "true") && (shift5 += shift5 > 0 ? 1 : -1);
       const index8 = Math.min(max2, Math.max(min2, currentIndex + shift5)), found = tokensOrdered[index8];
-      return (typeof found == "string" ? tokens2[found] : found) || tokens2.$true;
+      return (typeof found == "string" ? tokens3[found] : found) || tokens3.$true;
     }, "stepTokenUpOrDown");
     var getTokenRelative2 = stepTokenUpOrDown2;
   }
@@ -2323,7 +2323,7 @@ var require_cjs15 = __commonJS({
     module2.exports = __toCommonJS2(index_exports);
     var import_get_token16 = require_cjs14();
     var getButtonSized2 = /* @__PURE__ */ __name((val, {
-      tokens: tokens2,
+      tokens: tokens3,
       props
     }) => {
       if (!val || props.circular) return;
@@ -2332,7 +2332,7 @@ var require_cjs15 = __commonJS({
         height: val,
         borderRadius: props.circular ? 1e5 : val * 0.2
       };
-      const xSize = (0, import_get_token16.getSpace)(val), radiusToken = tokens2.radius[val] ?? tokens2.radius.$true;
+      const xSize = (0, import_get_token16.getSpace)(val), radiusToken = tokens3.radius[val] ?? tokens3.radius.$true;
       return {
         paddingHorizontal: xSize,
         height: val,
@@ -2406,22 +2406,22 @@ var require_variants = __commonJS({
     var padded2 = {
       true: /* @__PURE__ */ __name((_, extras) => {
         const {
-          tokens: tokens2,
+          tokens: tokens3,
           props
         } = extras;
         return {
-          padding: tokens2.space[props.size] || tokens2.space.$true
+          padding: tokens3.space[props.size] || tokens3.space.$true
         };
       }, "true")
     };
     var radiused2 = {
       true: /* @__PURE__ */ __name((_, extras) => {
         const {
-          tokens: tokens2,
+          tokens: tokens3,
           props
         } = extras;
         return {
-          borderRadius: tokens2.radius[props.size] || tokens2.radius.$true
+          borderRadius: tokens3.radius[props.size] || tokens3.radius.$true
         };
       }, "true")
     };
@@ -2432,10 +2432,10 @@ var require_variants = __commonJS({
     var circular2 = {
       true: /* @__PURE__ */ __name((_, {
         props,
-        tokens: tokens2
+        tokens: tokens3
       }) => {
         if (!("size" in props)) return circularStyle2;
-        const size6 = typeof props.size == "number" ? props.size : tokens2.size[props.size];
+        const size6 = typeof props.size == "number" ? props.size : tokens3.size[props.size];
         return {
           ...circularStyle2,
           width: size6,
@@ -2732,7 +2732,7 @@ var require_cjs17 = __commonJS({
     var cache3 = /* @__PURE__ */ new WeakMap();
     function getDefaultSizeToken2(font) {
       if (typeof font == "object" && cache3.has(font)) return cache3.get(font);
-      const sizeTokens2 = "$true" in font.size ? font.size : (0, import_core57.getTokens)().size, sizeDefault = sizeTokens2.$true, sizeDefaultSpecific = sizeDefault ? Object.keys(sizeTokens2).find((x) => x !== "$true" && sizeTokens2[x].val === sizeDefault.val) : null;
+      const sizeTokens = "$true" in font.size ? font.size : (0, import_core57.getTokens)().size, sizeDefault = sizeTokens.$true, sizeDefaultSpecific = sizeDefault ? Object.keys(sizeTokens).find((x) => x !== "$true" && sizeTokens[x].val === sizeDefault.val) : null;
       return !sizeDefault || !sizeDefaultSpecific ? (process.env.NODE_ENV === "development" && console.warn(`No default size is set in your tokens for the "true" key, fonts will be inconsistent.
 
       Fix this by having consistent tokens across fonts and sizes and setting a true key for your size tokens, or
@@ -2771,8 +2771,8 @@ var require_SizableText = __commonJS({
     });
     module2.exports = __toCommonJS2(SizableText_exports);
     var import_get_font_sized8 = require_cjs17();
-    var import_web26 = require("@tamagui/core");
-    var SizableText2 = (0, import_web26.styled)(import_web26.Text, {
+    var import_web27 = require("@tamagui/core");
+    var SizableText2 = (0, import_web27.styled)(import_web27.Text, {
       name: "SizableText",
       fontFamily: "$body",
       variants: {
@@ -2825,9 +2825,9 @@ var require_Paragraph = __commonJS({
       Paragraph: /* @__PURE__ */ __name(() => Paragraph2, "Paragraph")
     });
     module2.exports = __toCommonJS2(Paragraph_exports);
-    var import_web26 = require("@tamagui/core");
+    var import_web27 = require("@tamagui/core");
     var import_SizableText2 = require_SizableText();
-    var Paragraph2 = (0, import_web26.styled)(import_SizableText2.SizableText, {
+    var Paragraph2 = (0, import_web27.styled)(import_SizableText2.SizableText, {
       name: "Paragraph",
       tag: "p",
       userSelect: "auto",
@@ -2872,9 +2872,9 @@ var require_Headings = __commonJS({
       Heading: /* @__PURE__ */ __name(() => Heading2, "Heading")
     });
     module2.exports = __toCommonJS2(Headings_exports);
-    var import_web26 = require("@tamagui/core");
+    var import_web27 = require("@tamagui/core");
     var import_Paragraph2 = require_Paragraph();
-    var Heading2 = (0, import_web26.styled)(import_Paragraph2.Paragraph, {
+    var Heading2 = (0, import_web27.styled)(import_Paragraph2.Paragraph, {
       tag: "span",
       name: "Heading",
       accessibilityRole: "header",
@@ -2882,7 +2882,7 @@ var require_Headings = __commonJS({
       size: "$8",
       margin: 0
     });
-    var H12 = (0, import_web26.styled)(Heading2, {
+    var H12 = (0, import_web27.styled)(Heading2, {
       name: "H1",
       tag: "h1",
       variants: {
@@ -2896,7 +2896,7 @@ var require_Headings = __commonJS({
         unstyled: process.env.TAMAGUI_HEADLESS === "1"
       }
     });
-    var H22 = (0, import_web26.styled)(Heading2, {
+    var H22 = (0, import_web27.styled)(Heading2, {
       name: "H2",
       tag: "h2",
       variants: {
@@ -2910,7 +2910,7 @@ var require_Headings = __commonJS({
         unstyled: process.env.TAMAGUI_HEADLESS === "1"
       }
     });
-    var H32 = (0, import_web26.styled)(Heading2, {
+    var H32 = (0, import_web27.styled)(Heading2, {
       name: "H3",
       tag: "h3",
       variants: {
@@ -2924,7 +2924,7 @@ var require_Headings = __commonJS({
         unstyled: process.env.TAMAGUI_HEADLESS === "1"
       }
     });
-    var H42 = (0, import_web26.styled)(Heading2, {
+    var H42 = (0, import_web27.styled)(Heading2, {
       name: "H4",
       tag: "h4",
       variants: {
@@ -2938,7 +2938,7 @@ var require_Headings = __commonJS({
         unstyled: process.env.TAMAGUI_HEADLESS === "1"
       }
     });
-    var H52 = (0, import_web26.styled)(Heading2, {
+    var H52 = (0, import_web27.styled)(Heading2, {
       name: "H5",
       tag: "h5",
       variants: {
@@ -2952,7 +2952,7 @@ var require_Headings = __commonJS({
         unstyled: process.env.TAMAGUI_HEADLESS === "1"
       }
     });
-    var H62 = (0, import_web26.styled)(Heading2, {
+    var H62 = (0, import_web27.styled)(Heading2, {
       name: "H6",
       tag: "h6",
       variants: {
@@ -3225,7 +3225,7 @@ var require_Accordion = __commonJS({
     var import_text12 = require_cjs18();
     var import_use_controllable_state16 = require_cjs10();
     var import_use_direction5 = require_cjs19();
-    var import_web26 = require("@tamagui/core");
+    var import_web27 = require("@tamagui/core");
     var React84 = __toESM2(require("react"));
     var import_jsx_runtime70 = require("react/jsx-runtime");
     var ACCORDION_NAME = "Accordion";
@@ -3249,11 +3249,11 @@ var require_Accordion = __commonJS({
         ) : null;
       }
     };
-    var { Provider: AccordionValueProvider, useStyledContext: useAccordionValueContext } = (0, import_web26.createStyledContext)();
+    var { Provider: AccordionValueProvider, useStyledContext: useAccordionValueContext } = (0, import_web27.createStyledContext)();
     var {
       Provider: AccordionCollapsibleProvider,
       useStyledContext: useAccordionCollapsibleContext
-    } = (0, import_web26.createStyledContext)();
+    } = (0, import_web27.createStyledContext)();
     var AccordionImplSingle = React84.forwardRef((props, forwardedRef) => {
       const {
         value: valueProp,
@@ -3318,7 +3318,7 @@ var require_Accordion = __commonJS({
         }
       );
     });
-    var { Provider: AccordionImplProvider, useStyledContext: useAccordionContext } = (0, import_web26.createStyledContext)();
+    var { Provider: AccordionImplProvider, useStyledContext: useAccordionContext } = (0, import_web27.createStyledContext)();
     var AccordionImpl = React84.forwardRef(
       (props, forwardedRef) => {
         const {
@@ -3389,7 +3389,7 @@ var require_Accordion = __commonJS({
       }
     );
     var ITEM_NAME3 = "AccordionItem";
-    var { Provider: AccordionItemProvider, useStyledContext: useAccordionItemContext } = (0, import_web26.createStyledContext)();
+    var { Provider: AccordionItemProvider, useStyledContext: useAccordionItemContext } = (0, import_web27.createStyledContext)();
     var AccordionItem = React84.forwardRef(
       (props, forwardedRef) => {
         const { __scopeAccordion, value, ...accordionItemProps } = props, accordionContext = useAccordionContext(__scopeAccordion), valueContext = useAccordionValueContext(__scopeAccordion), triggerId = React84.useId(), open = value && valueContext.value.includes(value) || false, disabled = accordionContext.disabled || props.disabled;
@@ -3437,7 +3437,7 @@ var require_Accordion = __commonJS({
       }
     );
     AccordionHeader.displayName = HEADER_NAME;
-    var AccordionTriggerFrame = (0, import_web26.styled)(import_collapsible.Collapsible.Trigger, {
+    var AccordionTriggerFrame = (0, import_web27.styled)(import_collapsible.Collapsible.Trigger, {
       variants: {
         unstyled: {
           false: {
@@ -3476,7 +3476,7 @@ var require_Accordion = __commonJS({
         }
       ) });
     });
-    var AccordionContentFrame = (0, import_web26.styled)(import_collapsible.Collapsible.Content, {
+    var AccordionContentFrame = (0, import_web27.styled)(import_collapsible.Collapsible.Content, {
       variants: {
         unstyled: {
           false: {
@@ -3503,12 +3503,12 @@ var require_Accordion = __commonJS({
         }
       );
     });
-    var HeightAnimator = import_web26.View.styleable((props, ref) => {
-      const itemContext = useAccordionItemContext(), { children, ...rest } = props, [height, setHeight] = React84.useState(0), onLayout = (0, import_web26.useEvent)(({ nativeEvent }) => {
+    var HeightAnimator = import_web27.View.styleable((props, ref) => {
+      const itemContext = useAccordionItemContext(), { children, ...rest } = props, [height, setHeight] = React84.useState(0), onLayout = (0, import_web27.useEvent)(({ nativeEvent }) => {
         nativeEvent.layout.height && setHeight(nativeEvent.layout.height);
       });
-      return /* @__PURE__ */ (0, import_jsx_runtime70.jsx)(import_web26.View, { ref, height: itemContext.open ? height : 0, ...rest, children: /* @__PURE__ */ (0, import_jsx_runtime70.jsx)(
-        import_web26.View,
+      return /* @__PURE__ */ (0, import_jsx_runtime70.jsx)(import_web27.View, { ref, height: itemContext.open ? height : 0, ...rest, children: /* @__PURE__ */ (0, import_jsx_runtime70.jsx)(
+        import_web27.View,
         {
           position: "absolute",
           width: "100%",
@@ -8589,13 +8589,13 @@ var require_parse = __commonJS({
     var plus = "+".charCodeAt(0);
     var isUnicodeRange = /^[a-f0-9?-]+$/i;
     module2.exports = function(input) {
-      var tokens2 = [];
+      var tokens3 = [];
       var value = input;
       var next, quote, prev, token, escape, escapePos, whitespacePos, parenthesesOpenPos;
       var pos = 0;
       var code = value.charCodeAt(pos);
       var max2 = value.length;
-      var stack = [{ nodes: tokens2 }];
+      var stack = [{ nodes: tokens3 }];
       var balanced = 0;
       var parent;
       var name = "";
@@ -8609,7 +8609,7 @@ var require_parse = __commonJS({
             code = value.charCodeAt(next);
           } while (code <= 32);
           token = value.slice(pos, next);
-          prev = tokens2[tokens2.length - 1];
+          prev = tokens3[tokens3.length - 1];
           if (code === closeParentheses && balanced) {
             after = token;
           } else if (prev && prev.type === "div") {
@@ -8618,7 +8618,7 @@ var require_parse = __commonJS({
           } else if (code === comma || code === colon || code === slash && value.charCodeAt(next + 1) !== star && (!parent || parent && parent.type === "function" && parent.value !== "calc")) {
             before = token;
           } else {
-            tokens2.push({
+            tokens3.push({
               type: "space",
               sourceIndex: pos,
               sourceEndIndex: next,
@@ -8651,7 +8651,7 @@ var require_parse = __commonJS({
           } while (escape);
           token.value = value.slice(pos + 1, next);
           token.sourceEndIndex = token.unclosed ? next : next + 1;
-          tokens2.push(token);
+          tokens3.push(token);
           pos = next + 1;
           code = value.charCodeAt(pos);
         } else if (code === slash && value.charCodeAt(pos + 1) === star) {
@@ -8667,12 +8667,12 @@ var require_parse = __commonJS({
             token.sourceEndIndex = next;
           }
           token.value = value.slice(pos + 2, next);
-          tokens2.push(token);
+          tokens3.push(token);
           pos = next + 2;
           code = value.charCodeAt(pos);
         } else if ((code === slash || code === star) && parent && parent.type === "function" && parent.value === "calc") {
           token = value[pos];
-          tokens2.push({
+          tokens3.push({
             type: "word",
             sourceIndex: pos - before.length,
             sourceEndIndex: pos + token.length,
@@ -8682,7 +8682,7 @@ var require_parse = __commonJS({
           code = value.charCodeAt(pos);
         } else if (code === slash || code === comma || code === colon) {
           token = value[pos];
-          tokens2.push({
+          tokens3.push({
             type: "div",
             sourceIndex: pos - before.length,
             sourceEndIndex: pos + token.length,
@@ -8761,14 +8761,14 @@ var require_parse = __commonJS({
             pos = next + 1;
             token.sourceEndIndex = token.unclosed ? next : pos;
             code = value.charCodeAt(pos);
-            tokens2.push(token);
+            tokens3.push(token);
           } else {
             balanced += 1;
             token.after = "";
             token.sourceEndIndex = pos + 1;
-            tokens2.push(token);
+            tokens3.push(token);
             stack.push(token);
-            tokens2 = token.nodes = [];
+            tokens3 = token.nodes = [];
             parent = token;
           }
           name = "";
@@ -8782,7 +8782,7 @@ var require_parse = __commonJS({
           stack[stack.length - 1].sourceEndIndex = pos;
           stack.pop();
           parent = stack[balanced];
-          tokens2 = parent.nodes;
+          tokens3 = parent.nodes;
         } else {
           next = pos;
           do {
@@ -8796,14 +8796,14 @@ var require_parse = __commonJS({
           if (openParentheses === code) {
             name = token;
           } else if ((uLower === token.charCodeAt(0) || uUpper === token.charCodeAt(0)) && plus === token.charCodeAt(1) && isUnicodeRange.test(token.slice(2))) {
-            tokens2.push({
+            tokens3.push({
               type: "unicode-range",
               sourceIndex: pos,
               sourceEndIndex: next,
               value: token
             });
           } else {
-            tokens2.push({
+            tokens3.push({
               type: "word",
               sourceIndex: pos,
               sourceEndIndex: next,
@@ -12564,7 +12564,7 @@ var require_RefreshControl = __commonJS({
     var _react = _interopRequireDefault(require("react"));
     var _excluded = ["colors", "enabled", "onRefresh", "progressBackgroundColor", "progressViewOffset", "refreshing", "size", "tintColor", "title", "titleColor"];
     function RefreshControl(props) {
-      var colors2 = props.colors, enabled = props.enabled, onRefresh = props.onRefresh, progressBackgroundColor = props.progressBackgroundColor, progressViewOffset = props.progressViewOffset, refreshing = props.refreshing, size6 = props.size, tintColor = props.tintColor, title = props.title, titleColor = props.titleColor, rest = (0, _objectWithoutPropertiesLoose2.default)(props, _excluded);
+      var colors3 = props.colors, enabled = props.enabled, onRefresh = props.onRefresh, progressBackgroundColor = props.progressBackgroundColor, progressViewOffset = props.progressViewOffset, refreshing = props.refreshing, size6 = props.size, tintColor = props.tintColor, title = props.title, titleColor = props.titleColor, rest = (0, _objectWithoutPropertiesLoose2.default)(props, _excluded);
       return /* @__PURE__ */ _react.default.createElement(_View.default, rest);
     }
     __name(RefreshControl, "RefreshControl");
@@ -27125,17 +27125,17 @@ var import_core = require("@tamagui/core");
 var getElevation = /* @__PURE__ */ __name((size6, extras) => {
   if (!size6) return;
   const {
-    tokens: tokens2
-  } = extras, token = tokens2.size[size6], sizeNum = (0, import_core.isVariable)(token) ? +token.val : size6;
+    tokens: tokens3
+  } = extras, token = tokens3.size[size6], sizeNum = (0, import_core.isVariable)(token) ? +token.val : size6;
   return getSizedElevation(sizeNum, extras);
 }, "getElevation");
 var getSizedElevation = /* @__PURE__ */ __name((val, {
   theme,
-  tokens: tokens2
+  tokens: tokens3
 }) => {
   let num = 0;
   if (val === true) {
-    const val2 = (0, import_core.getVariableValue)(tokens2.size.true);
+    const val2 = (0, import_core.getVariableValue)(tokens3.size.true);
     typeof val2 == "number" ? num = val2 : num = 10;
   } else num = +val;
   if (num === 0) return;
@@ -27211,12 +27211,12 @@ var cacheWholeVariables = {};
 var cacheKeys = {};
 var cacheWholeKeys = {};
 var stepTokenUpOrDown = /* @__PURE__ */ __name((type, current, options = defaultOptions) => {
-  const tokens2 = (0, import_web.getTokens)({
+  const tokens3 = (0, import_web.getTokens)({
     prefixed: true
   })[type];
   if (!(type in cacheVariables)) {
     cacheKeys[type] = [], cacheVariables[type] = [], cacheWholeKeys[type] = [], cacheWholeVariables[type] = [];
-    const sorted = Object.keys(tokens2).map((k) => tokens2[k]).sort((a, b) => a.val - b.val);
+    const sorted = Object.keys(tokens3).map((k) => tokens3[k]).sort((a, b) => a.val - b.val);
     for (const token of sorted) cacheKeys[type].push(token.key), cacheVariables[type].push(token);
     const sortedExcludingHalfSteps = sorted.filter((x) => !x.key.endsWith(".5"));
     for (const token of sortedExcludingHalfSteps) cacheWholeKeys[type].push(token.key), cacheWholeVariables[type].push(token);
@@ -27225,13 +27225,13 @@ var stepTokenUpOrDown = /* @__PURE__ */ __name((type, current, options = default
   let shift5 = options.shift || 0;
   shift5 && (current === "$true" || (0, import_web.isVariable)(current) && current.name === "true") && (shift5 += shift5 > 0 ? 1 : -1);
   const index8 = Math.min(max2, Math.max(min2, currentIndex + shift5)), found = tokensOrdered[index8];
-  return (typeof found == "string" ? tokens2[found] : found) || tokens2.$true;
+  return (typeof found == "string" ? tokens3[found] : found) || tokens3.$true;
 }, "stepTokenUpOrDown");
 var getTokenRelative = stepTokenUpOrDown;
 
 // ../../node_modules/@tamagui/get-button-sized/dist/esm/index.mjs
 var getButtonSized = /* @__PURE__ */ __name((val, {
-  tokens: tokens2,
+  tokens: tokens3,
   props
 }) => {
   if (!val || props.circular) return;
@@ -27240,7 +27240,7 @@ var getButtonSized = /* @__PURE__ */ __name((val, {
     height: val,
     borderRadius: props.circular ? 1e5 : val * 0.2
   };
-  const xSize = getSpace(val), radiusToken = tokens2.radius[val] ?? tokens2.radius.$true;
+  const xSize = getSpace(val), radiusToken = tokens3.radius[val] ?? tokens3.radius.$true;
   return {
     paddingHorizontal: xSize,
     height: val,
@@ -27277,22 +27277,22 @@ var bordered = /* @__PURE__ */ __name((val, {
 var padded = {
   true: /* @__PURE__ */ __name((_, extras) => {
     const {
-      tokens: tokens2,
+      tokens: tokens3,
       props
     } = extras;
     return {
-      padding: tokens2.space[props.size] || tokens2.space.$true
+      padding: tokens3.space[props.size] || tokens3.space.$true
     };
   }, "true")
 };
 var radiused = {
   true: /* @__PURE__ */ __name((_, extras) => {
     const {
-      tokens: tokens2,
+      tokens: tokens3,
       props
     } = extras;
     return {
-      borderRadius: tokens2.radius[props.size] || tokens2.radius.$true
+      borderRadius: tokens3.radius[props.size] || tokens3.radius.$true
     };
   }, "true")
 };
@@ -27303,10 +27303,10 @@ var circularStyle = {
 var circular = {
   true: /* @__PURE__ */ __name((_, {
     props,
-    tokens: tokens2
+    tokens: tokens3
   }) => {
     if (!("size" in props)) return circularStyle;
-    const size6 = typeof props.size == "number" ? props.size : tokens2.size[props.size];
+    const size6 = typeof props.size == "number" ? props.size : tokens3.size[props.size];
     return {
       ...circularStyle,
       width: size6,
@@ -27760,10 +27760,10 @@ var useAdaptIsActiveGiven = /* @__PURE__ */ __name(({
   when,
   platform: platform2
 }) => {
-  const media = (0, import_core5.useMedia)();
+  const media2 = (0, import_core5.useMedia)();
   if (when == null && platform2 == null) return false;
   let enabled = false;
-  return platform2 === "touch" ? enabled = isTouchable : platform2 === "native" ? enabled = !isWeb : platform2 === "web" ? enabled = isWeb : platform2 === "ios" ? enabled = isIos : platform2 === "android" && (enabled = isAndroid), platform2 && enabled == false ? false : (when && typeof when == "string" && (enabled = media[when]), enabled);
+  return platform2 === "touch" ? enabled = isTouchable : platform2 === "native" ? enabled = !isWeb : platform2 === "web" ? enabled = isWeb : platform2 === "ios" ? enabled = isIos : platform2 === "android" && (enabled = isAndroid), platform2 && enabled == false ? false : (when && typeof when == "string" && (enabled = media2[when]), enabled);
 }, "useAdaptIsActiveGiven");
 var useAdaptIsActive = /* @__PURE__ */ __name((scope) => {
   const props = useAdaptContext(scope);
@@ -29353,7 +29353,7 @@ var getFontSized = /* @__PURE__ */ __name((sizeTokenIn = "$true", {
 var cache2 = /* @__PURE__ */ new WeakMap();
 function getDefaultSizeToken(font) {
   if (typeof font == "object" && cache2.has(font)) return cache2.get(font);
-  const sizeTokens2 = "$true" in font.size ? font.size : (0, import_core11.getTokens)().size, sizeDefault = sizeTokens2.$true, sizeDefaultSpecific = sizeDefault ? Object.keys(sizeTokens2).find((x) => x !== "$true" && sizeTokens2[x].val === sizeDefault.val) : null;
+  const sizeTokens = "$true" in font.size ? font.size : (0, import_core11.getTokens)().size, sizeDefault = sizeTokens.$true, sizeDefaultSpecific = sizeDefault ? Object.keys(sizeTokens).find((x) => x !== "$true" && sizeTokens[x].val === sizeDefault.val) : null;
   return !sizeDefault || !sizeDefaultSpecific ? (process.env.NODE_ENV === "development" && console.warn(`No default size is set in your tokens for the "true" key, fonts will be inconsistent.
 
       Fix this by having consistent tokens across fonts and sizes and setting a true key for your size tokens, or
@@ -30254,9 +30254,9 @@ var import_web7 = require("@tamagui/core");
 
 // ../../node_modules/@tamagui/shapes/dist/esm/getShapeSize.mjs
 var getShapeSize = /* @__PURE__ */ __name((size6, {
-  tokens: tokens2
+  tokens: tokens3
 }) => {
-  const width = tokens2.size[size6] ?? size6, height = tokens2.size[size6] ?? size6;
+  const width = tokens3.size[size6] ?? size6, height = tokens3.size[size6] ?? size6;
   return {
     width,
     height,
@@ -30401,11 +30401,11 @@ var getFontSizeVariable = /* @__PURE__ */ __name((inSize, opts) => {
 var getFontSizeToken = /* @__PURE__ */ __name((inSize, opts) => {
   if (typeof inSize == "number") return null;
   const relativeSize = opts?.relativeSize || 0, conf = (0, import_core16.getConfig)(), fontSize = conf.fontsParsed[opts?.font || conf.defaultFontToken]?.size || // fallback to size tokens
-  conf.tokensParsed.size, size6 = (inSize === "$true" && !("$true" in fontSize) ? "$4" : inSize) ?? ("$true" in fontSize ? "$true" : "$4"), sizeTokens2 = Object.keys(fontSize);
-  let foundIndex = sizeTokens2.indexOf(size6);
-  foundIndex === -1 && size6.endsWith(".5") && (foundIndex = sizeTokens2.indexOf(size6.replace(".5", ""))), process.env.NODE_ENV === "development" && foundIndex === -1 && console.warn("No font size found", size6, opts, "in size tokens", sizeTokens2);
-  const tokenIndex = Math.min(Math.max(0, foundIndex + relativeSize), sizeTokens2.length - 1);
-  return sizeTokens2[tokenIndex] ?? size6;
+  conf.tokensParsed.size, size6 = (inSize === "$true" && !("$true" in fontSize) ? "$4" : inSize) ?? ("$true" in fontSize ? "$true" : "$4"), sizeTokens = Object.keys(fontSize);
+  let foundIndex = sizeTokens.indexOf(size6);
+  foundIndex === -1 && size6.endsWith(".5") && (foundIndex = sizeTokens.indexOf(size6.replace(".5", ""))), process.env.NODE_ENV === "development" && foundIndex === -1 && console.warn("No font size found", size6, opts, "in size tokens", sizeTokens);
+  const tokenIndex = Math.min(Math.max(0, foundIndex + relativeSize), sizeTokens.length - 1);
+  return sizeTokens[tokenIndex] ?? size6;
 }, "getFontSizeToken");
 
 // ../../node_modules/@tamagui/helpers-tamagui/dist/esm/prevent.mjs
@@ -30663,9 +30663,9 @@ var CardFrame = (0, import_web11.styled)(ThemeableStack, {
     },
     size: {
       "...size": /* @__PURE__ */ __name((val, {
-        tokens: tokens2
+        tokens: tokens3
       }) => ({
-        borderRadius: tokens2.radius[val] ?? val
+        borderRadius: tokens3.radius[val] ?? val
       }), "...size")
     }
   },
@@ -30686,9 +30686,9 @@ var CardHeader = (0, import_web11.styled)(ThemeableStack, {
     },
     size: {
       "...size": /* @__PURE__ */ __name((val, {
-        tokens: tokens2
+        tokens: tokens3
       }) => ({
-        padding: tokens2.space[val] ?? val
+        padding: tokens3.space[val] ?? val
       }), "...size")
     }
   },
@@ -31304,9 +31304,9 @@ var GroupFrame = (0, import_core21.styled)(ThemeableStack, {
       }
     },
     size: /* @__PURE__ */ __name((val, {
-      tokens: tokens2
+      tokens: tokens3
     }) => ({
-      borderRadius: tokens2.radius[val] ?? val ?? tokens2.radius.$true
+      borderRadius: tokens3.radius[val] ?? val ?? tokens3.radius.$true
     }), "size")
   },
   defaultVariants: {
@@ -31455,15 +31455,15 @@ var cloneElementWithPropOrder = /* @__PURE__ */ __name((child, props) => {
   }, next);
 }, "cloneElementWithPropOrder");
 
-// ../../node_modules/@tamagui/react-native-media-driver/dist/esm/createMedia.mjs
+// ../../node_modules/tamagui/node_modules/@tamagui/react-native-media-driver/dist/esm/createMedia.mjs
 var import_web14 = require("@tamagui/core");
 
-// ../../node_modules/@tamagui/react-native-media-driver/dist/esm/matchMedia.mjs
+// ../../node_modules/tamagui/node_modules/@tamagui/react-native-media-driver/dist/esm/matchMedia.mjs
 var matchMedia = globalThis.matchMedia;
 
-// ../../node_modules/@tamagui/react-native-media-driver/dist/esm/createMedia.mjs
-function createMedia(media) {
-  return (0, import_web14.setupMatchMedia)(matchMedia), media;
+// ../../node_modules/tamagui/node_modules/@tamagui/react-native-media-driver/dist/esm/createMedia.mjs
+function createMedia(media2) {
+  return (0, import_web14.setupMatchMedia)(matchMedia), media2;
 }
 __name(createMedia, "createMedia");
 
@@ -31630,11 +31630,11 @@ var ListItemFrame = (0, import_web16.styled)(ThemeableStack, {
     },
     size: {
       "...size": /* @__PURE__ */ __name((val, {
-        tokens: tokens2
+        tokens: tokens3
       }) => ({
-        minHeight: tokens2.size[val],
-        paddingHorizontal: tokens2.space[val],
-        paddingVertical: getSpace(tokens2.space[val], {
+        minHeight: tokens3.size[val],
+        paddingHorizontal: tokens3.space[val],
+        paddingVertical: getSpace(tokens3.space[val], {
           shift: -4
         })
       }), "...size")
@@ -33747,10 +33747,10 @@ var PopperContentFrame = (0, import_core24.styled)(ThemeableStack, {
     },
     size: {
       "...size": /* @__PURE__ */ __name((val, {
-        tokens: tokens2
+        tokens: tokens3
       }) => ({
-        padding: tokens2.space[val],
-        borderRadius: tokens2.radius[val]
+        padding: tokens3.space[val],
+        borderRadius: tokens3.radius[val]
       }), "...size")
     }
   },
@@ -40764,9 +40764,9 @@ var SelectViewportFrame = (0, import_core37.styled)(ThemeableStack, {
     },
     size: {
       "...size": /* @__PURE__ */ __name((val, {
-        tokens: tokens2
+        tokens: tokens3
       }) => ({
-        borderRadius: tokens2.radius[val] ?? val
+        borderRadius: tokens3.radius[val] ?? val
       }), "...size")
     }
   },
@@ -40928,11 +40928,11 @@ var NativeSelectFrame = (0, import_core38.styled)(ThemeableStack, {
     size: {
       "...size": /* @__PURE__ */ __name((val, extras) => {
         const {
-          tokens: tokens2
-        } = extras, paddingHorizontal = (0, import_core38.getVariableValue)(tokens2.space[val]);
+          tokens: tokens3
+        } = extras, paddingHorizontal = (0, import_core38.getVariableValue)(tokens3.space[val]);
         return {
-          borderRadius: tokens2.radius[val] ?? val,
-          minHeight: tokens2.size[val],
+          borderRadius: tokens3.radius[val] ?? val,
+          minHeight: tokens3.size[val],
           paddingRight: paddingHorizontal + 20,
           paddingLeft: paddingHorizontal,
           paddingVertical: getSpace(val, {
@@ -41519,7 +41519,7 @@ var SliderTrackActive = React68.forwardRef((props, forwardedRef) => {
 SliderTrackActive.displayName = RANGE_NAME;
 var THUMB_NAME = "SliderThumb";
 var getThumbSize = /* @__PURE__ */ __name((val) => {
-  const tokens2 = (0, import_core40.getTokens)(), size6 = typeof val == "number" ? val : getSize(tokens2.size[val], {
+  const tokens3 = (0, import_core40.getTokens)(), size6 = typeof val == "number" ? val : getSize(tokens3.size[val], {
     shift: -1
   });
   return {
@@ -42366,7 +42366,7 @@ __name(makeContentId, "makeContentId");
 // ../../node_modules/@tamagui/theme/dist/esm/_mutateTheme.mjs
 var import_web20 = require("@tamagui/core");
 function mutateThemes({
-  themes: themes2,
+  themes: themes3,
   batch,
   insertCSS = true,
   ...props
@@ -42375,7 +42375,7 @@ function mutateThemes({
   for (const {
     name,
     theme
-  } of themes2) {
+  } of themes3) {
     const res = _mutateTheme({
       ...props,
       name,
@@ -42441,11 +42441,11 @@ function updateThemeStates() {
   (0, import_web20.forceUpdateThemes)();
 }
 __name(updateThemeStates, "updateThemeStates");
-function insertThemeCSS(themes2, batch = false) {
+function insertThemeCSS(themes3, batch = false) {
   const config2 = (0, import_web20.getConfig)();
   let cssRules = [];
-  for (const themeName in themes2) {
-    const theme = themes2[themeName], rules = (0, import_web20.getThemeCSSRules)({
+  for (const themeName in themes3) {
+    const theme = themes3[themeName], rules = (0, import_web20.getThemeCSSRules)({
       config: config2,
       themeName,
       names: [themeName],
@@ -42455,7 +42455,7 @@ function insertThemeCSS(themes2, batch = false) {
     cssRules = [...cssRules, ...rules], batch || updateStyle(`t_theme_style_${themeName}`, rules);
   }
   if (batch) {
-    const id = typeof batch == "string" ? batch : (0, import_web20.simpleHash)(Object.keys(themes2).join(""));
+    const id = typeof batch == "string" ? batch : (0, import_web20.simpleHash)(Object.keys(themes3).join(""));
     updateStyle(`t_theme_style_${id}`, cssRules);
   }
   return cssRules;
@@ -45050,49 +45050,6 @@ var Text4 = (0, import_core54.styled)(import_core54.Text, {
 // ../../node_modules/tamagui/dist/esm/index.mjs
 var import_core55 = require("@tamagui/core");
 
-// ../../node_modules/@tamagui/font-inter/dist/esm/index.mjs
-var import_core56 = require("@tamagui/core");
-var createInterFont = /* @__PURE__ */ __name((font = {}, {
-  sizeLineHeight = /* @__PURE__ */ __name((size6) => size6 + 10, "sizeLineHeight"),
-  sizeSize = /* @__PURE__ */ __name((size6) => size6 * 1, "sizeSize")
-} = {}) => {
-  const size6 = Object.fromEntries(Object.entries({
-    ...defaultSizes,
-    ...font.size
-  }).map(([k, v]) => [k, sizeSize(+v)]));
-  return (0, import_core56.createFont)({
-    family: import_core56.isWeb ? 'Inter, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' : "Inter",
-    lineHeight: Object.fromEntries(Object.entries(size6).map(([k, v]) => [k, sizeLineHeight((0, import_core56.getVariableValue)(v))])),
-    weight: {
-      4: "300"
-    },
-    letterSpacing: {
-      4: 0
-    },
-    ...font,
-    size: size6
-  });
-}, "createInterFont");
-var defaultSizes = {
-  1: 11,
-  2: 12,
-  3: 13,
-  4: 14,
-  true: 14,
-  5: 16,
-  6: 18,
-  7: 20,
-  8: 23,
-  9: 30,
-  10: 46,
-  11: 55,
-  12: 62,
-  13: 72,
-  14: 92,
-  15: 114,
-  16: 134
-};
-
 // ../../node_modules/@tamagui/shorthands/dist/esm/index.mjs
 var shorthands = {
   // web-only
@@ -47562,8 +47519,23 @@ var tokens = (0, import_web24.createTokens)({
   size: size5
 });
 
-// ../../node_modules/@tamagui/animations-react-native/dist/esm/createAnimations.mjs
+// ../../libs/design-system/tamagui.config.ts
+var import_core56 = require("@tamagui/core");
+
+// ../../node_modules/@tamagui/react-native-media-driver/dist/esm/createMedia.mjs
 var import_web25 = require("@tamagui/core");
+
+// ../../node_modules/@tamagui/react-native-media-driver/dist/esm/matchMedia.mjs
+var matchMedia3 = globalThis.matchMedia;
+
+// ../../node_modules/@tamagui/react-native-media-driver/dist/esm/createMedia.mjs
+function createMedia2(media2) {
+  return (0, import_web25.setupMatchMedia)(matchMedia3), media2;
+}
+__name(createMedia2, "createMedia");
+
+// ../../node_modules/@tamagui/animations-react-native/dist/esm/createAnimations.mjs
+var import_web26 = require("@tamagui/core");
 var import_react57 = __toESM(require("react"), 1);
 var import_react_native_web13 = __toESM(require_cjs21(), 1);
 var animatedStyleKey = {
@@ -47647,7 +47619,7 @@ __name(useAnimatedNumber, "useAnimatedNumber");
 var useAnimatedNumberReaction = /* @__PURE__ */ __name(({
   value
 }, onValue) => {
-  const onChange = (0, import_web25.useEvent)((current) => {
+  const onChange = (0, import_web26.useEvent)((current) => {
     onValue(current.value);
   });
   import_react57.default.useEffect(() => {
@@ -47831,68 +47803,406 @@ function getValue(input, isColor = false) {
 }
 __name(getValue, "getValue");
 
-// ../../libs/design-system/tamagui.config.ts
-var sizeTokens = {
-  small: 14,
-  medium: 18,
-  large: 24
+// ../../libs/design-system/src/tokens/colors.ts
+var colors2 = {
+  // Primary colors
+  primary100: "#EBF5FF",
+  primary200: "#D6E8FF",
+  primary300: "#ADC8FF",
+  primary400: "#84A9FF",
+  primary500: "#6690FF",
+  primary600: "#3366FF",
+  // Primary base color
+  primary700: "#254EDB",
+  primary800: "#1939B7",
+  primary900: "#102693",
+  // Secondary colors
+  secondary100: "#F5F7FA",
+  secondary200: "#E4E7EB",
+  secondary300: "#CBD2D9",
+  secondary400: "#9AA5B1",
+  secondary500: "#7B8794",
+  secondary600: "#616E7C",
+  // Secondary base color
+  secondary700: "#52606D",
+  secondary800: "#3E4C59",
+  secondary900: "#323F4B",
+  // Success colors
+  success100: "#E3F9E5",
+  success200: "#C1F2C7",
+  success300: "#91E697",
+  success400: "#51CA58",
+  success500: "#31B237",
+  success600: "#18981D",
+  // Success base color
+  success700: "#0F8613",
+  success800: "#0B6E0B",
+  success900: "#035D14",
+  // Warning colors
+  warning100: "#FFF8E6",
+  warning200: "#FFEFC2",
+  warning300: "#FFE799",
+  warning400: "#FFD466",
+  warning500: "#FFC933",
+  warning600: "#FFBB00",
+  // Warning base color
+  warning700: "#DB9A00",
+  warning800: "#B77B00",
+  warning900: "#935E00",
+  // Danger colors
+  danger100: "#FFE6E6",
+  danger200: "#FFCCCC",
+  danger300: "#FFAAAA",
+  danger400: "#FF8080",
+  danger500: "#FF5555",
+  danger600: "#FF0000",
+  // Danger base color
+  danger700: "#DB0000",
+  danger800: "#B70000",
+  danger900: "#930000",
+  // Neutral colors
+  white: "#FFFFFF",
+  black: "#000000",
+  gray100: "#F5F5F5",
+  gray200: "#EEEEEE",
+  gray300: "#E0E0E0",
+  gray400: "#BDBDBD",
+  gray500: "#9E9E9E",
+  gray600: "#757575",
+  gray700: "#616161",
+  gray800: "#424242",
+  gray900: "#212121",
+  // Transparent
+  transparent: "transparent"
 };
-var headingFont = createInterFont({
+var semanticColors = {
+  // Base colors
+  primary: colors2.primary600,
+  primaryLight: colors2.primary400,
+  primaryDark: colors2.primary800,
+  secondary: colors2.secondary600,
+  secondaryLight: colors2.secondary400,
+  secondaryDark: colors2.secondary800,
+  success: colors2.success600,
+  successLight: colors2.success400,
+  successDark: colors2.success800,
+  warning: colors2.warning600,
+  warningLight: colors2.warning400,
+  warningDark: colors2.warning800,
+  danger: colors2.danger600,
+  dangerLight: colors2.danger400,
+  dangerDark: colors2.danger800,
+  // UI colors
+  background: colors2.white,
+  backgroundHover: colors2.gray100,
+  backgroundPress: colors2.gray200,
+  backgroundDark: colors2.gray900,
+  text: colors2.gray900,
+  textLight: colors2.gray700,
+  textMuted: colors2.gray500,
+  textDark: colors2.white,
+  border: colors2.gray300,
+  borderHover: colors2.gray400,
+  borderDark: colors2.gray700
+};
+var colors_default = {
+  ...colors2,
+  ...semanticColors
+};
+
+// ../../libs/design-system/tamagui.config.ts
+var headingFont = (0, import_core56.createFont)({
+  family: "System",
   size: {
-    // Define your font sizes with named keys
-    small: sizeTokens.small,
-    medium: sizeTokens.medium,
-    large: sizeTokens.large,
-    // Keep the numeric keys for compatibility
+    // Named sizes
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 20,
+    "2xl": 24,
+    "3xl": 30,
+    "4xl": 36,
+    "5xl": 48,
+    "6xl": 64,
+    // For compatibility with Tamagui
+    small: 14,
+    medium: 16,
+    large: 18,
+    // Numeric sizes
     1: 12,
     2: 14,
     3: 16,
     4: 18,
     5: 20,
     6: 24,
-    7: 28,
-    8: 32,
-    9: 36,
-    10: 40
+    7: 30,
+    8: 36,
+    9: 48,
+    10: 64
+  },
+  lineHeight: {
+    xs: 16,
+    sm: 20,
+    md: 24,
+    lg: 28,
+    xl: 32,
+    "2xl": 36,
+    "3xl": 40,
+    "4xl": 48,
+    "5xl": 56,
+    "6xl": 72,
+    // For compatibility
+    small: 20,
+    medium: 24,
+    large: 28
   },
   weight: {
-    // Define your font weights
+    thin: "100",
+    extralight: "200",
+    light: "300",
+    normal: "400",
+    medium: "500",
+    semibold: "600",
+    bold: "700",
+    extrabold: "800",
+    black: "900",
+    // For compatibility
     4: "400",
     6: "600",
     7: "700"
   },
   letterSpacing: {
+    tighter: -0.8,
+    tight: -0.4,
+    normal: 0,
+    wide: 0.4,
+    wider: 0.8,
+    widest: 1.6,
+    // For compatibility
     4: 0,
-    8: -1
-  },
-  face: {
-    700: { normal: "InterBold" },
-    600: { normal: "InterSemiBold" },
-    400: { normal: "Inter" }
+    8: -0.8
   }
 });
-var bodyFont = createInterFont({
+var bodyFont = (0, import_core56.createFont)({
+  family: "System",
   size: {
-    // Define your font sizes with named keys
-    small: sizeTokens.small,
-    medium: sizeTokens.medium,
-    large: sizeTokens.large,
-    // Keep the numeric keys for compatibility
+    // Named sizes
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 20,
+    "2xl": 24,
+    // For compatibility with Tamagui
+    small: 14,
+    medium: 16,
+    large: 18,
+    // Numeric sizes
     1: 12,
     2: 14,
     3: 16,
-    4: 18
+    4: 18,
+    5: 20,
+    6: 24
+  },
+  lineHeight: {
+    xs: 16,
+    sm: 20,
+    md: 24,
+    lg: 28,
+    xl: 32,
+    "2xl": 36,
+    // For compatibility
+    small: 20,
+    medium: 24,
+    large: 28
   },
   weight: {
+    thin: "100",
+    extralight: "200",
+    light: "300",
+    normal: "400",
+    medium: "500",
+    semibold: "600",
+    bold: "700",
+    extrabold: "800",
+    black: "900",
+    // For compatibility
     4: "400",
     6: "600"
   },
-  face: {
-    600: { normal: "InterSemiBold" },
-    400: { normal: "Inter" }
+  letterSpacing: {
+    tighter: -0.8,
+    tight: -0.4,
+    normal: 0,
+    wide: 0.4,
+    wider: 0.8,
+    widest: 1.6,
+    // For compatibility
+    4: 0
   }
 });
+var tokens2 = {
+  ...tokens,
+  size: {
+    ...tokens.size,
+    // Named sizes
+    xs: 4,
+    sm: 8,
+    md: 16,
+    lg: 24,
+    xl: 32,
+    "2xl": 40,
+    "3xl": 48,
+    "4xl": 56,
+    "5xl": 64,
+    "6xl": 72,
+    // For compatibility
+    small: 8,
+    medium: 16,
+    large: 24
+  },
+  space: {
+    ...tokens.space,
+    // Named spaces
+    xs: 4,
+    sm: 8,
+    md: 16,
+    lg: 24,
+    xl: 32,
+    "2xl": 40,
+    "3xl": 48,
+    "4xl": 56,
+    "5xl": 64,
+    "6xl": 72,
+    // For compatibility
+    small: 8,
+    medium: 16,
+    large: 24
+  },
+  radius: {
+    // Named radii
+    none: 0,
+    xs: 2,
+    sm: 4,
+    md: 8,
+    lg: 12,
+    xl: 16,
+    "2xl": 24,
+    full: 9999,
+    // For compatibility
+    small: 4,
+    medium: 8,
+    large: 12
+  },
+  zIndex: {
+    0: 0,
+    1: 100,
+    2: 200,
+    3: 300,
+    4: 400,
+    5: 500,
+    max: 999
+  },
+  color: {
+    ...tokens.color,
+    ...colors2,
+    // Semantic colors
+    primary: colors2.primary600,
+    primaryLight: colors2.primary400,
+    primaryDark: colors2.primary800,
+    secondary: colors2.secondary600,
+    secondaryLight: colors2.secondary400,
+    secondaryDark: colors2.secondary800,
+    success: colors2.success600,
+    successLight: colors2.success400,
+    successDark: colors2.success800,
+    warning: colors2.warning600,
+    warningLight: colors2.warning400,
+    warningDark: colors2.warning800,
+    danger: colors2.danger600,
+    dangerLight: colors2.danger400,
+    dangerDark: colors2.danger800,
+    background: colors2.white,
+    backgroundDark: colors2.gray900,
+    text: colors2.gray900,
+    textLight: colors2.gray700,
+    textDark: colors2.white,
+    textMuted: colors2.gray500,
+    border: colors2.gray300,
+    borderDark: colors2.gray700
+  }
+};
+var lightTheme = {
+  background: colors2.white,
+  backgroundHover: colors2.gray100,
+  backgroundPress: colors2.gray200,
+  backgroundFocus: colors2.primary100,
+  backgroundTransparent: "rgba(255,255,255,0.85)",
+  color: colors2.gray900,
+  colorHover: colors2.gray800,
+  colorPress: colors2.gray900,
+  colorFocus: colors2.gray900,
+  colorTransparent: "rgba(10,10,10,0.85)",
+  borderColor: colors2.gray300,
+  borderColorHover: colors2.gray400,
+  borderColorFocus: colors2.primary600,
+  borderColorPress: colors2.gray500,
+  shadowColor: "rgba(0,0,0,0.1)",
+  shadowColorHover: "rgba(0,0,0,0.2)",
+  shadowColorPress: "rgba(0,0,0,0.3)",
+  shadowColorFocus: "rgba(0,0,0,0.2)",
+  // Component-specific colors
+  primary: colors2.primary600,
+  secondary: colors2.secondary600,
+  success: colors2.success600,
+  warning: colors2.warning600,
+  danger: colors2.danger600
+};
+var themes2 = {
+  ...themes,
+  light: lightTheme
+};
+var media = createMedia2({
+  // Breakpoints
+  xs: { maxWidth: 480 },
+  sm: { maxWidth: 640 },
+  md: { maxWidth: 768 },
+  lg: { maxWidth: 1024 },
+  xl: { maxWidth: 1280 },
+  xxl: { maxWidth: 1536 },
+  // Min-width queries
+  gtXs: { minWidth: 481 },
+  gtSm: { minWidth: 641 },
+  gtMd: { minWidth: 769 },
+  gtLg: { minWidth: 1025 },
+  gtXl: { minWidth: 1281 },
+  // Height-based
+  short: { maxHeight: 820 },
+  tall: { minHeight: 821 },
+  // Special cases
+  hoverNone: { hover: "none" },
+  pointerCoarse: { pointer: "coarse" },
+  // Platform-specific
+  web: { platform: "web" },
+  native: { platform: "native" },
+  ios: { platform: "ios" },
+  android: { platform: "android" }
+});
 var animations = createAnimations({
+  fast: {
+    type: "timing",
+    duration: 150
+  },
+  medium: {
+    type: "timing",
+    duration: 300
+  },
+  slow: {
+    type: "timing",
+    duration: 500
+  },
   bouncy: {
     type: "spring",
     damping: 10,
@@ -47911,28 +48221,20 @@ var animations = createAnimations({
     stiffness: 250
   }
 });
-var sizeTokensWithNamedSizes = {
-  ...tokens.size,
-  small: sizeTokens.small,
-  medium: sizeTokens.medium,
-  large: sizeTokens.large
-};
-var customTokens = {
-  ...tokens,
-  size: sizeTokensWithNamedSizes
-};
 var config = createTamagui({
-  animations,
+  defaultFont: "body",
+  fonts: {
+    body: bodyFont,
+    heading: headingFont
+  },
   defaultTheme: "light",
   shouldAddPrefersColorThemes: false,
-  themeClassNameOnRoot: false,
+  themeClassNameOnRoot: true,
   shorthands,
-  fonts: {
-    heading: headingFont,
-    body: bodyFont
-  },
-  themes,
-  tokens: customTokens
+  themes: themes2,
+  tokens: tokens2,
+  media,
+  animations
 });
 var tamagui_config_default = config;
 
