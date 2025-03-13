@@ -30,8 +30,8 @@ body {
 }
 
 .tamagui-Button:hover {
-  background-color: #254edb !important;
-  color: #f0f0f0 !important;
+  background-color: #121212 !important;
+  color: !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
 }
@@ -51,14 +51,14 @@ body {
 }
 
 .tamagui-Button[data-transparent='true']:hover {
-  background-color: #ebf5ff !important;
+  background-color: #121212 !important;
   color: #254edb !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05) !important;
 }
 
 .tamagui-Button[data-transparent='true']:active {
-  background-color: #d6e8ff !important;
+  background-color: #d6e8f0f !important;
   color: #1939b7 !important;
   transform: translateY(0) !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;

@@ -1,4 +1,6 @@
-import { Input as TamaguiInput, styled } from 'tamagui';
+import { Input as TamaguiInput, styled, GetProps } from 'tamagui';
+
+export type InputProps = GetProps<typeof TamaguiInput>;
 
 /**
  * Enhanced Input component with consistent styling across platforms
@@ -96,4 +98,4 @@ export const Input = styled(TamaguiInput, {
       },
     },
   },
-});
+}) as typeof TamaguiInput;

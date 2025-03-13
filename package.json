@@ -2,12 +2,22 @@
   "name": "@health-care-frontend/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "postinstall": "node ./tools/scripts/patch-nx-cli.js"
+  },
   "private": true,
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "libs/*"
+    ]
+  },
   "dependencies": {
     "@expo/metro-config": "~0.19.4",
     "@expo/metro-runtime": "~4.0.0",
     "@nx/expo": "^20.5.0",
+    "@react-navigation/native": "^7.0.15",
+    "@react-navigation/native-stack": "^7.2.1",
     "@tamagui/animations-react-native": "^1.125.22",
     "@tamagui/config": "^1.125.22",
     "@tamagui/core": "^1.125.22",
@@ -18,7 +28,9 @@
     "@tamagui/shorthands": "^1.125.22",
     "@tamagui/theme-base": "^1.125.22",
     "@tamagui/themes": "^1.125.22",
+    "@types/react-native": "^0.72.8",
     "expo": "~52.0.11",
+    "expo-secure-store": "^14.0.1",
     "expo-splash-screen": "~0.29.13",
     "expo-status-bar": "~2.0.0",
     "nativewind": "^4.1.23",

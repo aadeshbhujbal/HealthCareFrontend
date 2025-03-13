@@ -16,8 +16,14 @@
     "baseUrl": ".",
     "strict": true,
     "paths": {
-      "@healthcare/design-system": ["libs/design-system/src/index.ts"],
-      "@healthcare/design-system/*": ["libs/design-system/*"]
+      "@health-care-frontend/design-system": [
+        "libs/design-system/src/index.ts"
+      ],
+      "@health-care-frontend/design-system/*": ["libs/design-system/src/*"],
+      "@health-care-frontend/shared-services": [
+        "libs/shared-services/src/index.ts"
+      ],
+      "@health-care-frontend/shared-services/*": ["libs/shared-services/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -7,7 +7,7 @@
       "@tamagui/babel-plugin",
       {
         "config": "./tamagui.config.ts",
-        "components": ["@healthcare/design-system", "tamagui"],
+        "components": ["@health-care-frontend/design-system", "tamagui"],
         "logTimings": true,
         "disableExtraction": false
       }

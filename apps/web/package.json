@@ -7,6 +7,6 @@
     "react-dom": "^18.2.0",
     "react-native-web": "0.19.0",
     "tamagui": "^1.125.22",
-    "@healthcare/design-system": "*"
+    "@health-care-frontend/design-system": "*"
   }
 }
