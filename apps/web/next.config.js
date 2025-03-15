@@ -16,7 +16,6 @@ module.exports = composePlugins(
   withNx,
   tamaguiPlugin
 )({
-  distDir: 'dist/.next',
   transpilePackages: [
     'react-native',
     'react-native-web',
@@ -25,8 +24,7 @@ module.exports = composePlugins(
     '@tamagui/shorthands',
     '@tamagui/font-inter',
     '@tamagui/animations-react-native',
-    '@health-care-frontend/design-system',
-    '@health-care-frontend/shared-services',
+    '@healthcare/design-system',
   ],
   experimental: {
     forceSwcTransforms: true,
@@ -49,27 +47,22 @@ module.exports = composePlugins(
       use: ['style-loader', 'css-loader'],
     });
 
-    // Resolve local packages
     config.resolve.alias = {
       ...config.resolve.alias,
       'react-native$': 'react-native-web',
-      'react-dom': 'react-dom',
-      'react-dom/hydrate': 'react-dom/client',
+      'react-dom': 'react-dom', // Keep this to avoid double-loading
+      'react-dom/hydrate': 'react-dom/client', // Fix hydration error
       'react-dom/unmountComponentAtNode': path.resolve(
         __dirname,
         './utils/react-dom-shim.js'
-      ),
-      '@health-care-frontend/design-system': path.resolve(
-        __dirname,
-        '../../libs/design-system/src'
-      ),
-      '@health-care-frontend/shared-services': path.resolve(
-        __dirname,
-        '../../libs/shared-services/src'
-      ),
+      ), // Custom unmount shim
       '@healthcare/design-system': path.resolve(
         __dirname,
-        '../../libs/design-system/src'
+        '../../libs/design-system'
+      ),
+      '@healthcare/design-system/tamagui.config': path.resolve(
+        __dirname,
+        '../../libs/design-system/tamagui.config'
       ),
     };
 

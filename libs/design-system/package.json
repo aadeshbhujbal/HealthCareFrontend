@@ -1,9 +1,10 @@
 {
-  "name": "@health-care-frontend/design-system",
+  "name": "@healthcare/design-system",
   "version": "0.1.0",
   "private": true,
-  "main": "../../dist/libs/design-system/index.js",
-  "types": "../../dist/libs/design-system/index.d.ts",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
   "sideEffects": false,
   "dependencies": {
     "@tamagui/animations-react-native": "^1.125.22",

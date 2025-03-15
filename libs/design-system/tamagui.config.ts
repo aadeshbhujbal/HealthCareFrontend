@@ -4,14 +4,155 @@ import { themes as tamaguiThemes, tokens as tamaguiTokens } from '@tamagui/theme
 import { createFont } from '@tamagui/core'
 import { createMedia } from '@tamagui/react-native-media-driver'
 import { createAnimations } from '@tamagui/animations-react-native'
-import { createInterFont } from '@tamagui/font-inter'
 
 // Import the colors from the shared tokens file
 import { colors, semanticColors } from './src/tokens/colors'
 
 // Create a custom font with named sizes
-const headingFont = createInterFont()
-const bodyFont = createInterFont()
+const headingFont = createFont({
+  family: 'System',
+  size: {
+    // Named sizes
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 20,
+    '2xl': 24,
+    '3xl': 30,
+    '4xl': 36,
+    '5xl': 48,
+    '6xl': 64,
+    
+    // For compatibility with Tamagui
+    small: 14,
+    medium: 16,
+    large: 18,
+    
+    // Numeric sizes
+    1: 12,
+    2: 14,
+    3: 16,
+    4: 18,
+    5: 20,
+    6: 24,
+    7: 30,
+    8: 36,
+    9: 48,
+    10: 64,
+  },
+  lineHeight: {
+    xs: 16,
+    sm: 20,
+    md: 24,
+    lg: 28,
+    xl: 32,
+    '2xl': 36,
+    '3xl': 40,
+    '4xl': 48,
+    '5xl': 56,
+    '6xl': 72,
+    
+    // For compatibility
+    small: 20,
+    medium: 24,
+    large: 28,
+  },
+  weight: {
+    thin: '100',
+    extralight: '200',
+    light: '300',
+    normal: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+    extrabold: '800',
+    black: '900',
+    
+    // For compatibility
+    4: '400',
+    6: '600',
+    7: '700',
+  },
+  letterSpacing: {
+    tighter: -0.8,
+    tight: -0.4,
+    normal: 0,
+    wide: 0.4,
+    wider: 0.8,
+    widest: 1.6,
+    
+    // For compatibility
+    4: 0,
+    8: -0.8,
+  },
+})
+
+// Body font (same as heading for now, but could be different)
+const bodyFont = createFont({
+  family: 'System',
+  size: {
+    // Named sizes
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 20,
+    '2xl': 24,
+    
+    // For compatibility with Tamagui
+    small: 14,
+    medium: 16,
+    large: 18,
+    
+    // Numeric sizes
+    1: 12,
+    2: 14,
+    3: 16,
+    4: 18,
+    5: 20,
+    6: 24,
+  },
+  lineHeight: {
+    xs: 16,
+    sm: 20,
+    md: 24,
+    lg: 28,
+    xl: 32,
+    '2xl': 36,
+    
+    // For compatibility
+    small: 20,
+    medium: 24,
+    large: 28,
+  },
+  weight: {
+    thin: '100',
+    extralight: '200',
+    light: '300',
+    normal: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+    extrabold: '800',
+    black: '900',
+    
+    // For compatibility
+    4: '400',
+    6: '600',
+  },
+  letterSpacing: {
+    tighter: -0.8,
+    tight: -0.4,
+    normal: 0,
+    wide: 0.4,
+    wider: 0.8,
+    widest: 1.6,
+    
+    // For compatibility
+    4: 0,
+  },
+})
 
 // Create custom tokens
 export const tokens = {
@@ -222,16 +363,19 @@ const animations = createAnimations({
 
 // Create the Tamagui configuration
 const config = createTamagui({
+  defaultFont: 'body',
+  fonts: {
+    body: bodyFont,
+    heading: headingFont,
+  },
   defaultTheme: 'light',
   shouldAddPrefersColorThemes: false,
-  themeClassNameOnRoot: false,
+  themeClassNameOnRoot: true,
   shorthands,
-  fonts: {
-    heading: headingFont,
-    body: bodyFont
-  },
   themes,
-  tokens
+  tokens,
+  media,
+  animations,
 })
 
 export type AppConfig = typeof config

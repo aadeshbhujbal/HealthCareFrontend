@@ -4,18 +4,11 @@ const { withNativeWind } = require('nativewind/metro');
 const { mergeConfig } = require('metro-config');
 const path = require('path');
 
-const projectRoot = __dirname;
+const defaultConfig = getDefaultConfig(__dirname);
+const { assetExts, sourceExts } = defaultConfig.resolver;
+
+const projectRoot = path.resolve(__dirname);
 const workspaceRoot = path.resolve(projectRoot, '../..');
-
-const config = getDefaultConfig(projectRoot);
-
-config.watchFolders = [workspaceRoot];
-config.resolver.nodeModulesPaths = [
-  path.resolve(projectRoot, 'node_modules'),
-  path.resolve(workspaceRoot, 'node_modules'),
-];
-
-config.resolver.disableHierarchicalLookup = true;
 
 /**
  * Metro configuration
@@ -29,23 +22,27 @@ const customConfig = {
     babelTransformerPath: require.resolve('react-native-svg-transformer'),
   },
   resolver: {
-    assetExts: config.resolver.assetExts.filter((ext) => ext !== 'svg'),
-    sourceExts: [...config.resolver.sourceExts, 'cjs', 'mjs', 'svg'],
+    assetExts: assetExts.filter((ext) => ext !== 'svg'),
+    sourceExts: [...sourceExts, 'cjs', 'mjs', 'svg'],
     extraNodeModules: {
-      '@health-care-frontend/design-system': path.resolve(
+      '@healthcare/design-system': path.resolve(
         workspaceRoot,
         'libs/design-system/src'
       ),
-      '@health-care-frontend/shared-services': path.resolve(
-        workspaceRoot,
-        'libs/shared-services/src'
-      ),
     },
+    nodeModulesPaths: [
+      path.resolve(projectRoot, 'node_modules'),
+      path.resolve(workspaceRoot, 'node_modules'),
+    ],
   },
+  watchFolders: [
+    projectRoot,
+    path.resolve(workspaceRoot, 'libs/design-system'),
+  ],
 };
 
 // Combine Nx and NativeWind
-module.exports = withNxMetro(mergeConfig(config, customConfig), {
+module.exports = withNxMetro(mergeConfig(defaultConfig, customConfig), {
   debug: true,
   extensions: [],
   watchFolders: [],

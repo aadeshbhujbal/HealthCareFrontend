@@ -5,26 +5,5 @@
   "projectType": "library",
   "tags": [],
   "// targets": "to see all targets run: nx show project design-system --web",
-  "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/libs/design-system",
-        "main": "libs/design-system/src/index.ts",
-        "tsConfig": "libs/design-system/tsconfig.lib.json",
-        "assets": ["libs/design-system/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "libs/design-system/**/*.ts",
-          "libs/design-system/**/*.tsx"
-        ]
-      }
-    }
-  }
+  "targets": {}
 }

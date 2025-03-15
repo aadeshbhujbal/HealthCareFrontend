@@ -1,24 +1,22 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "strict": true,
-    "jsx": "react-native",
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "paths": {
-      "@health-care-frontend/design-system": [
-        "../../libs/design-system/src"
-      ],
-      "@health-care-frontend/shared-services": [
-        "../../libs/shared-services/src"
-      ]
-    }
+    "jsx": "react-native",
+    "lib": ["dom", "esnext"],
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "declaration": true,
+    "types": ["nativewind"],
+    "composite": true
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "nativewind-env.d.ts"
+  "files": [],
+  "include": ["nativewind-env.d.ts"],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    }
   ]
 }

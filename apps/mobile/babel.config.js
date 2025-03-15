@@ -8,22 +8,28 @@ module.exports = function (api) {
       'nativewind/babel',
     ],
     plugins: [
-      'expo-router/babel',
-      [
-        'transform-inline-environment-variables',
-        {
-          include: ['TAMAGUI_TARGET', 'EXPO_ROUTER_APP_ROOT'],
-        },
-      ],
       [
         '@tamagui/babel-plugin',
         {
-          config: '../../libs/design-system/tamagui.config.ts',
+          config: './tamagui.config.ts',
           components: ['tamagui'],
           logTimings: true,
         },
+      ], // Tamagui plugin with configuration
+      'react-native-reanimated/plugin', // If you're using animations
+      [
+        'module-resolver',
+        {
+          root: [path.resolve(__dirname, '../..')],
+          alias: {
+            '@healthcare/design-system': path.resolve(
+              __dirname,
+              '../../libs/design-system/src'
+            ),
+          },
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        },
       ],
-      'react-native-reanimated/plugin',
     ],
   };
 };

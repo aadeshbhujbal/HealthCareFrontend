@@ -906,21 +906,21 @@ var require_constants = __commonJS({
       isIos: /* @__PURE__ */ __name(() => isIos2, "isIos"),
       isServer: /* @__PURE__ */ __name(() => isServer3, "isServer"),
       isTouchable: /* @__PURE__ */ __name(() => isTouchable3, "isTouchable"),
-      isWeb: /* @__PURE__ */ __name(() => isWeb8, "isWeb"),
+      isWeb: /* @__PURE__ */ __name(() => isWeb7, "isWeb"),
       isWebTouchable: /* @__PURE__ */ __name(() => isWebTouchable3, "isWebTouchable"),
       isWindowDefined: /* @__PURE__ */ __name(() => isWindowDefined2, "isWindowDefined"),
       useIsomorphicLayoutEffect: /* @__PURE__ */ __name(() => useIsomorphicLayoutEffect3, "useIsomorphicLayoutEffect")
     });
     module2.exports = __toCommonJS2(constants_exports);
     var import_react58 = require("react");
-    var isWeb8 = true;
+    var isWeb7 = true;
     var isWindowDefined2 = typeof window < "u";
-    var isServer3 = isWeb8 && !isWindowDefined2;
-    var isClient4 = isWeb8 && isWindowDefined2;
+    var isServer3 = isWeb7 && !isWindowDefined2;
+    var isClient4 = isWeb7 && isWindowDefined2;
     var useIsomorphicLayoutEffect3 = isServer3 ? import_react58.useEffect : import_react58.useLayoutEffect;
     var isChrome3 = typeof navigator < "u" && /Chrome/.test(navigator.userAgent || "");
     var isWebTouchable3 = isClient4 && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
-    var isTouchable3 = !isWeb8 || isWebTouchable3;
+    var isTouchable3 = !isWeb7 || isWebTouchable3;
     var isAndroid6 = false;
     var isIos2 = process.env.TEST_NATIVE_PLATFORM === "ios";
     var currentPlatform2 = "web";
@@ -47519,6 +47519,9 @@ var tokens = (0, import_web24.createTokens)({
   size: size5
 });
 
+// ../../libs/design-system/tamagui.config.ts
+var import_core56 = require("@tamagui/core");
+
 // ../../node_modules/@tamagui/react-native-media-driver/dist/esm/createMedia.mjs
 var import_web25 = require("@tamagui/core");
 
@@ -47800,49 +47803,6 @@ function getValue(input, isColor = false) {
 }
 __name(getValue, "getValue");
 
-// ../../node_modules/@tamagui/font-inter/dist/esm/index.mjs
-var import_core56 = require("@tamagui/core");
-var createInterFont = /* @__PURE__ */ __name((font = {}, {
-  sizeLineHeight = /* @__PURE__ */ __name((size6) => size6 + 10, "sizeLineHeight"),
-  sizeSize = /* @__PURE__ */ __name((size6) => size6 * 1, "sizeSize")
-} = {}) => {
-  const size6 = Object.fromEntries(Object.entries({
-    ...defaultSizes,
-    ...font.size
-  }).map(([k, v]) => [k, sizeSize(+v)]));
-  return (0, import_core56.createFont)({
-    family: import_core56.isWeb ? 'Inter, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' : "Inter",
-    lineHeight: Object.fromEntries(Object.entries(size6).map(([k, v]) => [k, sizeLineHeight((0, import_core56.getVariableValue)(v))])),
-    weight: {
-      4: "300"
-    },
-    letterSpacing: {
-      4: 0
-    },
-    ...font,
-    size: size6
-  });
-}, "createInterFont");
-var defaultSizes = {
-  1: 11,
-  2: 12,
-  3: 13,
-  4: 14,
-  true: 14,
-  5: 16,
-  6: 18,
-  7: 20,
-  8: 23,
-  9: 30,
-  10: 46,
-  11: 55,
-  12: 62,
-  13: 72,
-  14: 92,
-  15: 114,
-  16: 134
-};
-
 // ../../libs/design-system/src/tokens/colors.ts
 var colors2 = {
   // Primary colors
@@ -47951,8 +47911,138 @@ var colors_default = {
 };
 
 // ../../libs/design-system/tamagui.config.ts
-var headingFont = createInterFont();
-var bodyFont = createInterFont();
+var headingFont = (0, import_core56.createFont)({
+  family: "System",
+  size: {
+    // Named sizes
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 20,
+    "2xl": 24,
+    "3xl": 30,
+    "4xl": 36,
+    "5xl": 48,
+    "6xl": 64,
+    // For compatibility with Tamagui
+    small: 14,
+    medium: 16,
+    large: 18,
+    // Numeric sizes
+    1: 12,
+    2: 14,
+    3: 16,
+    4: 18,
+    5: 20,
+    6: 24,
+    7: 30,
+    8: 36,
+    9: 48,
+    10: 64
+  },
+  lineHeight: {
+    xs: 16,
+    sm: 20,
+    md: 24,
+    lg: 28,
+    xl: 32,
+    "2xl": 36,
+    "3xl": 40,
+    "4xl": 48,
+    "5xl": 56,
+    "6xl": 72,
+    // For compatibility
+    small: 20,
+    medium: 24,
+    large: 28
+  },
+  weight: {
+    thin: "100",
+    extralight: "200",
+    light: "300",
+    normal: "400",
+    medium: "500",
+    semibold: "600",
+    bold: "700",
+    extrabold: "800",
+    black: "900",
+    // For compatibility
+    4: "400",
+    6: "600",
+    7: "700"
+  },
+  letterSpacing: {
+    tighter: -0.8,
+    tight: -0.4,
+    normal: 0,
+    wide: 0.4,
+    wider: 0.8,
+    widest: 1.6,
+    // For compatibility
+    4: 0,
+    8: -0.8
+  }
+});
+var bodyFont = (0, import_core56.createFont)({
+  family: "System",
+  size: {
+    // Named sizes
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 20,
+    "2xl": 24,
+    // For compatibility with Tamagui
+    small: 14,
+    medium: 16,
+    large: 18,
+    // Numeric sizes
+    1: 12,
+    2: 14,
+    3: 16,
+    4: 18,
+    5: 20,
+    6: 24
+  },
+  lineHeight: {
+    xs: 16,
+    sm: 20,
+    md: 24,
+    lg: 28,
+    xl: 32,
+    "2xl": 36,
+    // For compatibility
+    small: 20,
+    medium: 24,
+    large: 28
+  },
+  weight: {
+    thin: "100",
+    extralight: "200",
+    light: "300",
+    normal: "400",
+    medium: "500",
+    semibold: "600",
+    bold: "700",
+    extrabold: "800",
+    black: "900",
+    // For compatibility
+    4: "400",
+    6: "600"
+  },
+  letterSpacing: {
+    tighter: -0.8,
+    tight: -0.4,
+    normal: 0,
+    wide: 0.4,
+    wider: 0.8,
+    widest: 1.6,
+    // For compatibility
+    4: 0
+  }
+});
 var tokens2 = {
   ...tokens,
   size: {
@@ -48132,16 +48222,19 @@ var animations = createAnimations({
   }
 });
 var config = createTamagui({
+  defaultFont: "body",
+  fonts: {
+    body: bodyFont,
+    heading: headingFont
+  },
   defaultTheme: "light",
   shouldAddPrefersColorThemes: false,
-  themeClassNameOnRoot: false,
+  themeClassNameOnRoot: true,
   shorthands,
-  fonts: {
-    heading: headingFont,
-    body: bodyFont
-  },
   themes: themes2,
-  tokens: tokens2
+  tokens: tokens2,
+  media,
+  animations
 });
 var tamagui_config_default = config;
 
