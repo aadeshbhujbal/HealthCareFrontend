@@ -5,6 +5,12 @@
   "references": [
     {
       "path": "./apps/web"
+    },
+    {
+      "path": "./shared/design-system"
+    },
+    {
+      "path": "./shared/services"
     }
   ]
 }
