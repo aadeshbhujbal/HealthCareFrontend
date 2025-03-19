@@ -20,8 +20,38 @@ const nextConfig = {
         __dirname,
         '../../shared/design-system/src'
       ),
+      '@healthcare/services': path.resolve(
+        __dirname,
+        '../../shared/services/src'
+      ),
     };
     return config;
+  },
+  async redirects() {
+    return [
+      {
+        source: '/auth',
+        destination: '/auth/login',
+        permanent: true,
+      },
+    ];
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+    ],
+  },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['localhost:3000'],
+    },
   },
 };
 

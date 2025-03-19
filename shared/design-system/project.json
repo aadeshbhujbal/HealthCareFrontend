@@ -10,11 +10,8 @@
       "options": {
         "outputPath": "dist/shared/design-system",
         "main": "shared/design-system/src/index.ts",
-        "tsConfig": "shared/design-system/tsconfig.lib.json",
-        "assets": [
-          "shared/design-system/*.md",
-          "shared/design-system/src/styles/*.css"
-        ]
+        "tsConfig": "shared/design-system/tsconfig.json",
+        "assets": ["shared/design-system/*.md"]
       }
     },
     "lint": {

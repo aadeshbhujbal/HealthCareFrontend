@@ -1,20 +1,24 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "composite": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "importHelpers": true,
-    "isolatedModules": true,
-    "lib": ["es2022"],
+    "target": "es2015",
     "module": "esnext",
-    "moduleResolution": "bundler",
-    "noEmitOnError": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
     "strict": true,
-    "target": "es2022"
-  }
+    "paths": {
+      "@healthcare/shared-services": ["shared/services/src/index.ts"],
+      "@healthcare/shared-services/*": ["shared/services/src/*"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
 }

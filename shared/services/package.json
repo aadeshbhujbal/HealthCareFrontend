@@ -1,5 +1,5 @@
 {
-  "name": "@health-care-frontend/services",
+  "name": "@healthcare/shared-services",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -14,25 +14,21 @@
       "default": "./dist/index.js"
     }
   },
-  "nx": {
-    "sourceRoot": "shared/services/src",
-    "targets": {
-      "build": {
-        "executor": "@nx/js:swc",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "options": {
-          "outputPath": "shared/services/dist",
-          "main": "shared/services/src/index.ts",
-          "tsConfig": "shared/services/tsconfig.lib.json",
-          "skipTypeCheck": true,
-          "stripLeadingPaths": true
-        }
-      }
-    }
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
   },
   "dependencies": {
-    "@swc/helpers": "~0.5.11"
+    "@swc/helpers": "~0.5.11",
+    "axios": "^1.6.7",
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@types/react": "^18.2.61",
+    "typescript": "^5.3.3"
   }
 }

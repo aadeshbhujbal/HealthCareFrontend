@@ -1,6 +1,6 @@
 export function DesignSystem() {
   return (
-    <div className={styles['container']}>
+    <div>
       <h1>Welcome to DesignSystem!</h1>
     </div>
   );
