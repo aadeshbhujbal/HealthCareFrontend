@@ -1,82 +1,148 @@
-# HealthCareFrontend
+# HealthCare Frontend Monorepo
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A monorepo built with Nx, containing Next.js web application, Expo mobile application, and shared libraries.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+## 📁 Repository Structure
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/next?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+```bash
+HealthCareFrontend/
+├── apps/
+│   ├── web/          # Next.js web application
+│   └── mobile/       # Expo mobile application
+├── shared/           # Shared libraries
+│   ├── design-system/
+│   └── services/
+└── package.json
+```
 
-## Finish your CI setup
+## 🛠 Prerequisites
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/6sfLr7ZvDR)
+- Node.js (v18.x recommended)
+- Yarn or npm
+- Nx CLI (`npm install -g nx`)
+- For mobile development:
+  - Expo CLI (`npm install -g expo-cli`)
+  - Expo Go app on your mobile device
+  - Android Studio (for Android development)
+  - Xcode (for iOS development - Mac only)
 
+## 📦 Installation
 
-## Run tasks
+```bash
+# Clone the repository
+git clone [your-repo-url]
 
-To run the dev server for your app, use:
+# Install dependencies
+yarn install
+```
 
-```sh
+## 🚀 Running Applications
+
+### Web Application (Next.js)
+
+```bash
+# Development mode
 npx nx dev web
-```
 
-To create a production bundle:
-
-```sh
+# Build
 npx nx build web
+
+# Production mode
+npx nx start web
 ```
 
-To see all available targets to run for a project, run:
+### Mobile Application (Expo)
 
-```sh
-npx nx show project web
+#### Method 1: Using Expo CLI (Recommended)
+```bash
+# Navigate to mobile app directory
+cd apps/mobile
+
+# Start Expo development server
+npx expo start
+
+# Run on Android
+npx expo start --android
+
+# Run on iOS
+npx expo start --ios
+
+# Run on Web
+npx expo start --web
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+#### Method 2: Using Nx Commands
+```bash
+# Start development server
+npx nx start mobile
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+# Run on Android
+npx nx android mobile
 
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/next:app demo
+# Run on iOS
+npx nx ios mobile
 ```
 
-To generate a new library, use:
+## 🔄 Shared Libraries
 
-```sh
-npx nx g @nx/react:lib mylib
+The `shared` directory contains:
+- `design-system`: Shared UI components and styles
+- `services`: Shared business logic and API services
+
+## 🛠 Development Commands
+
+### General Nx Commands
+```bash
+# Run a target for all projects
+npx nx run-many --target=build --all
+
+# Run a target for specific project
+npx nx run [project]:[target]
+
+# List available targets
+npx nx show projects
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+### Testing
+```bash
+# Run tests for web
+npx nx test web
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+# Run tests for mobile
+npx nx test mobile
+```
 
+### Linting
+```bash
+# Lint web app
+npx nx lint web
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+# Lint mobile app
+npx nx lint mobile
+```
 
-## Install Nx Console
+## 📱 Mobile Development Tips
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+When running the mobile app:
+1. Use Expo Go app to scan QR code for physical device testing
+2. Press 'a' in terminal to open Android emulator
+3. Press 'i' in terminal to open iOS simulator (Mac only)
+4. Press 'r' to reload the app
+5. Press 'm' to toggle the menu
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 🔗 Useful Links
 
-## Useful links
+- [Nx Documentation](https://nx.dev)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Expo Documentation](https://docs.expo.dev)
+- [React Native Documentation](https://reactnative.dev)
 
-Learn more:
+## 🤝 Contributing
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/next?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+1. Create a new branch from `main`
+2. Make your changes
+3. Submit a pull request
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 📝 License
+
+[Add your license information here]
