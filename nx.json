@@ -7,7 +7,14 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"]
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "test",
+          "e2e",
+          "build:android",
+          "build:ios"
+        ]
       }
     }
   },
@@ -45,6 +52,19 @@
         "buildTargetName": "build",
         "devTargetName": "dev",
         "startTargetName": "start"
+      }
+    },
+    {
+      "plugin": "@nx/expo/plugin",
+      "options": {
+        "startTargetName": "start",
+        "serveTargetName": "serve",
+        "buildTargetName": "build",
+        "buildAndroidTargetName": "build:android",
+        "buildIosTargetName": "build:ios",
+        "iosTargetName": "ios",
+        "androidTargetName": "android",
+        "webTargetName": "web"
       }
     }
   ]
