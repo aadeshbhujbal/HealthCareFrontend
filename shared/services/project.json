@@ -1,7 +1,7 @@
 {
   "name": "shared-services",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "src",
+  "sourceRoot": "shared/services/src",
   "projectType": "library",
   "targets": {
     "build": {
@@ -9,9 +9,9 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/shared/services",
-        "main": "src/index.ts",
-        "tsConfig": "tsconfig.json",
-        "assets": ["*.md"]
+        "main": "shared/services/src/index.ts",
+        "tsConfig": "shared/services/tsconfig.json",
+        "assets": ["shared/services/*.md"]
       },
       "configurations": {
         "production": {
@@ -25,7 +25,7 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["**/*.ts"]
+        "lintFilePatterns": ["shared/services/**/*.ts"]
       }
     }
   },
