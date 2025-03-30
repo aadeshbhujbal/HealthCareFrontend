@@ -11,7 +11,7 @@
       }
     },
     "serve": {
-      "executor": "@nx/expo:start",
+      "executor": "@nx/expo:serve",
       "options": {
         "port": 8081
       }
@@ -25,13 +25,9 @@
       }
     },
     "build": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/expo:build",
       "dependsOn": ["sync-deps"],
-      "options": {
-        "commands": ["expo prebuild", "expo export:web"],
-        "parallel": false,
-        "cwd": "apps/mobile"
-      }
+      "options": {}
     },
     "android": {
       "executor": "nx:run-commands",
@@ -112,6 +108,14 @@
         "command": "expo install --check",
         "cwd": "apps/mobile"
       }
+    },
+    "run-ios": {
+      "executor": "@nx/expo:run-ios",
+      "options": {}
+    },
+    "run-android": {
+      "executor": "@nx/expo:run-android",
+      "options": {}
     }
   },
   "tags": []

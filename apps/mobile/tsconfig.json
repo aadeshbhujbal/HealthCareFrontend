@@ -6,7 +6,10 @@
     "paths": {
       "~/*": [
         "*"
-      ]
+      ],
+      "@healthcare/shared-services": ["../../shared/services/src"]
+
+      
     }
   },
   "include": [
