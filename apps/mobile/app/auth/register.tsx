@@ -1,194 +1,263 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
+import { useState } from 'react';
+import { View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Link, useRouter } from 'expo-router';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'expo-router';
+import * as z from 'zod';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
 import { Text } from '~/components/ui/text';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardFooter,
-} from '~/components/ui/card';
-import { Checkbox } from '~/components/ui/checkbox';
+import { Input } from '~/components/ui/input';
 import { useAuth } from '~/providers/AuthProvider';
-import { registerSchema } from '@healthcare/shared-services';
+import { Form } from '~/components/ui/form';
+import { LinearGradient } from 'expo-linear-gradient';
 
-interface RegisterFormData {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  age: number;
-}
+const registerSchema = z
+  .object({
+    firstName: z.string().min(2, 'First name must be at least 2 characters'),
+    lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
+
+type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function RegisterScreen() {
   const router = useRouter();
-  const { authService } = useAuth();
+  const { register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [acceptTerms, setAcceptTerms] = useState(false);
 
-  const form = useForm<RegisterFormData>({
+  const form = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
       confirmPassword: '',
-      firstName: '',
-      lastName: '',
-      phone: '',
-      age: 1,
     },
   });
 
-  const onSubmit = async (data: RegisterFormData) => {
-    if (!acceptTerms) {
-      setMessage('Please accept the terms and conditions to continue.');
-      return;
-    }
-
-    setIsLoading(true);
-    setMessage('');
-
+  const onSubmit = async (data: RegisterForm) => {
     try {
-      const response = await authService.register({
-        email: data.email,
-        password: data.password,
+      setIsLoading(true);
+      await register({
         firstName: data.firstName,
         lastName: data.lastName,
-        name: `${data.firstName} ${data.lastName}`,
-        phone: data.phone,
-        age: data.age,
+        email: data.email,
+        password: data.password,
       });
-
-      if (response && response.id) {
-        setMessage('Registration successful! Redirecting to login...');
-        setTimeout(() => {
-          router.push('/auth/login?registered=true');
-        }, 2000);
-      }
+      router.replace('/auth/verify-otp');
     } catch (error: any) {
-      setMessage(error.message || 'Registration failed. Please try again.');
+      form.setError('root', {
+        type: 'manual',
+        message: error.message || 'Failed to create account',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <View className="flex-1 justify-center p-6 bg-background">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <Text className="text-2xl font-bold text-center">
-            Create an account
-          </Text>
-          <Text className="text-sm text-muted-foreground text-center mt-2">
-            Enter your information to create an account
-          </Text>
-        </CardHeader>
-
-        <CardContent>
-          <View className="space-y-4">
-            <View className="flex-row space-x-2">
-              <View className="flex-1">
-                <Controller
-                  control={form.control}
-                  name="firstName"
-                  render={({ field, fieldState }) => (
-                    <View>
-                      <Input
-                        placeholder="First name"
-                        value={field.value}
-                        onChangeText={field.onChange}
-                      />
-                      {fieldState.error && (
-                        <Text className="text-sm text-destructive mt-1">
-                          {fieldState.error.message}
-                        </Text>
-                      )}
-                    </View>
-                  )}
-                />
-              </View>
-              <View className="flex-1">
-                <Controller
-                  control={form.control}
-                  name="lastName"
-                  render={({ field, fieldState }) => (
-                    <View>
-                      <Input
-                        placeholder="Last name"
-                        value={field.value}
-                        onChangeText={field.onChange}
-                      />
-                      {fieldState.error && (
-                        <Text className="text-sm text-destructive mt-1">
-                          {fieldState.error.message}
-                        </Text>
-                      )}
-                    </View>
-                  )}
-                />
-              </View>
-            </View>
-
-            {/* Add other form fields similarly */}
-            {/* Email, Phone, Password, Confirm Password */}
-
-            <View className="flex-row items-center space-x-2">
-              <Checkbox
-                checked={acceptTerms}
-                onCheckedChange={(checked) => setAcceptTerms(!!checked)}
-              />
-              <Text className="text-sm text-muted-foreground">
-                I accept the terms and conditions
-              </Text>
-            </View>
-
-            <Button onPress={form.handleSubmit(onSubmit)} disabled={isLoading}>
-              <Text className="text-primary-foreground">
-                {isLoading ? 'Creating account...' : 'Create account'}
-              </Text>
-            </Button>
-
-            {message && (
-              <View
-                className={`p-3 rounded-md ${
-                  message.includes('successful')
-                    ? 'bg-green-50'
-                    : 'bg-destructive/10'
-                }`}
-              >
-                <Text
-                  className={
-                    message.includes('successful')
-                      ? 'text-green-700'
-                      : 'text-destructive'
-                  }
-                >
-                  {message}
+    <LinearGradient
+      colors={['#3730A3', '#4F46E5', '#6366F1']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      className="flex-1"
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1"
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          className="p-6"
+        >
+          <Animated.View
+            entering={FadeInDown.delay(200).springify()}
+            className="flex-1 justify-center"
+          >
+            {/* Welcome Text */}
+            <View className="space-y-4 mb-8">
+              <Animated.View entering={FadeInDown.delay(300).springify()}>
+                <Text className="text-4xl font-bold text-white">
+                  Create Account
                 </Text>
-              </View>
-            )}
-          </View>
-        </CardContent>
+              </Animated.View>
+              <Animated.View entering={FadeInDown.delay(400).springify()}>
+                <Text className="text-lg text-white/80">
+                  Please fill in your details to get started
+                </Text>
+              </Animated.View>
+            </View>
 
-        <CardFooter>
-          <Text className="text-sm text-muted-foreground text-center">
-            Already have an account?{' '}
-            <Text
-              className="text-primary font-medium"
-              onPress={() => router.push('/auth/login')}
+            <Animated.View
+              entering={FadeInUp.delay(500).springify()}
+              className="bg-white/10 backdrop-blur-lg p-6 rounded-[32px] space-y-6 border border-white/20"
             >
-              Sign in
-            </Text>
-          </Text>
-        </CardFooter>
-      </Card>
-    </View>
+              <Form form={form}>
+                <View className="space-y-4">
+                  <View className="flex-row space-x-4">
+                    <View className="flex-1">
+                      <Form.Field
+                        control={form.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <Form.Item>
+                            <Form.Label>
+                              <Text className="text-white/90">First Name</Text>
+                            </Form.Label>
+                            <Form.Control>
+                              <Input
+                                placeholder="John"
+                                autoCapitalize="words"
+                                className="bg-white/20 border-white/20 text-white placeholder:text-white/50"
+                                placeholderTextColor="rgba(255,255,255,0.5)"
+                                {...field}
+                              />
+                            </Form.Control>
+                            <Form.Message className="text-red-300" />
+                          </Form.Item>
+                        )}
+                      />
+                    </View>
+
+                    <View className="flex-1">
+                      <Form.Field
+                        control={form.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <Form.Item>
+                            <Form.Label>
+                              <Text className="text-white/90">Last Name</Text>
+                            </Form.Label>
+                            <Form.Control>
+                              <Input
+                                placeholder="Doe"
+                                autoCapitalize="words"
+                                className="bg-white/20 border-white/20 text-white placeholder:text-white/50"
+                                placeholderTextColor="rgba(255,255,255,0.5)"
+                                {...field}
+                              />
+                            </Form.Control>
+                            <Form.Message className="text-red-300" />
+                          </Form.Item>
+                        )}
+                      />
+                    </View>
+                  </View>
+
+                  <Form.Field
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <Form.Item>
+                        <Form.Label>
+                          <Text className="text-white/90">Email</Text>
+                        </Form.Label>
+                        <Form.Control>
+                          <Input
+                            placeholder="john.doe@example.com"
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            className="bg-white/20 border-white/20 text-white placeholder:text-white/50"
+                            placeholderTextColor="rgba(255,255,255,0.5)"
+                            {...field}
+                          />
+                        </Form.Control>
+                        <Form.Message className="text-red-300" />
+                      </Form.Item>
+                    )}
+                  />
+
+                  <Form.Field
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <Form.Item>
+                        <Form.Label>
+                          <Text className="text-white/90">Password</Text>
+                        </Form.Label>
+                        <Form.Control>
+                          <Input
+                            placeholder="Create a strong password"
+                            secureTextEntry
+                            className="bg-white/20 border-white/20 text-white placeholder:text-white/50"
+                            placeholderTextColor="rgba(255,255,255,0.5)"
+                            {...field}
+                          />
+                        </Form.Control>
+                        <Form.Message className="text-red-300" />
+                      </Form.Item>
+                    )}
+                  />
+
+                  <Form.Field
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <Form.Item>
+                        <Form.Label>
+                          <Text className="text-white/90">
+                            Confirm Password
+                          </Text>
+                        </Form.Label>
+                        <Form.Control>
+                          <Input
+                            placeholder="Confirm your password"
+                            secureTextEntry
+                            className="bg-white/20 border-white/20 text-white placeholder:text-white/50"
+                            placeholderTextColor="rgba(255,255,255,0.5)"
+                            {...field}
+                          />
+                        </Form.Control>
+                        <Form.Message className="text-red-300" />
+                      </Form.Item>
+                    )}
+                  />
+
+                  {form.formState.errors.root && (
+                    <Animated.View
+                      entering={FadeInUp.springify()}
+                      className="bg-red-500/20 p-4 rounded-lg"
+                    >
+                      <Text className="text-white text-sm">
+                        {form.formState.errors.root.message}
+                      </Text>
+                    </Animated.View>
+                  )}
+
+                  <Button
+                    className="w-full h-14 bg-white shadow-xl rounded-[20px]"
+                    size="lg"
+                    onPress={form.handleSubmit(onSubmit)}
+                    disabled={isLoading}
+                  >
+                    <Text className="text-primary text-lg font-bold">
+                      {isLoading ? 'Creating Account...' : 'Create Account'}
+                    </Text>
+                  </Button>
+                </View>
+              </Form>
+            </Animated.View>
+
+            <View className="flex-row justify-center mt-6">
+              <Text className="text-white/80">Already have an account? </Text>
+              <Link href="/auth/login" asChild>
+                <Button variant="link" className="p-0 h-auto">
+                  <Text className="text-white font-bold">Sign In</Text>
+                </Button>
+              </Link>
+            </View>
+          </Animated.View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }

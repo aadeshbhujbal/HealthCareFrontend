@@ -4,13 +4,12 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "*"
-      ],
-      "@healthcare/shared-services": ["../../shared/services/src"]
+      "~/*": ["./*"],
 
-      
-    }
+      "@healthcare/shared-services": ["../../shared/services/src"]
+    },
+    "jsx": "react-native",
+    "esModuleInterop": true
   },
   "include": [
     "**/*.ts",

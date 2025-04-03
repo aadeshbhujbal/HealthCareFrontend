@@ -9,7 +9,7 @@ import {
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
@@ -55,31 +55,41 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+    <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+      <AuthProvider>
+        <PortalHost name="root" />
         <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
         <Stack
           screenOptions={{
             headerShown: true,
+            headerRight: () => (
+              <View className="mr-4">
+                <ThemeToggle />
+              </View>
+            ),
           }}
         >
           <Stack.Screen
             name="index"
             options={{
-              title: 'HealthCare',
-              headerRight: () => <ThemeToggle />,
+              title: 'Welcome',
             }}
           />
           <Stack.Screen
             name="auth"
             options={{
-              headerShown: false, // Hide the header for nested auth screens
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="dashboard"
+            options={{
+              title: 'Dashboard',
             }}
           />
         </Stack>
-        <PortalHost />
-      </ThemeProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

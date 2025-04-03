@@ -1,285 +1,177 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { useRouter } from 'expo-router';
+import { View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Link, useRouter } from 'expo-router';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
 import { Text } from '~/components/ui/text';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardFooter,
-} from '~/components/ui/card';
-import { Separator } from '~/components/ui/separator';
+import { Input } from '~/components/ui/input';
 import { useAuth } from '~/providers/AuthProvider';
-import { TabGroup } from '~/components/ui/tab-group';
+import { Form } from '~/components/ui/form';
+import { useState } from 'react';
 
-interface LoginFormData {
-  email: string;
-  password: string;
-}
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
 
-interface OTPFormData {
-  email: string;
-  otp: string;
-}
+type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { authService } = useAuth();
+  const { signIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [showOTPInput, setShowOTPInput] = useState(false);
-  const [activeTab, setActiveTab] = useState<'password' | 'otp'>('password');
 
-  const passwordForm = useForm<LoginFormData>();
-  const otpForm = useForm<OTPFormData>();
+  const form = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
-  const handlePasswordLogin = async (data: LoginFormData) => {
-    setIsLoading(true);
-    setMessage('');
-
+  const onSubmit = async (data: LoginForm) => {
     try {
-      await authService.login({
-        email: data.email,
-        password: data.password,
+      setIsLoading(true);
+      await signIn(data);
+      router.replace('/dashboard');
+    } catch (error: any) {
+      form.setError('root', {
+        type: 'manual',
+        message: error.message || 'Failed to sign in',
       });
-      // Successful login will be handled by AuthProvider's redirect
-    } catch (error: any) {
-      setMessage(error.message || 'Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleRequestOTP = async (email: string) => {
-    setIsLoading(true);
-    setMessage('');
-
-    try {
-      await authService.requestOTP({
-        identifier: email,
-        deliveryMethod: 'email',
-      });
-      setShowOTPInput(true);
-      setMessage('OTP has been sent to your email.');
-    } catch (error: any) {
-      setMessage(error.message || 'Failed to send OTP. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleOTPLogin = async (data: OTPFormData) => {
-    setIsLoading(true);
-    setMessage('');
-
-    try {
-      await authService.verifyOTP(data.email, data.otp);
-      // Successful login will be handled by AuthProvider's redirect
-    } catch (error: any) {
-      setMessage(error.message || 'Invalid OTP. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <View className="flex-1 justify-center p-6 bg-background">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <Text className="text-2xl font-bold text-center">Welcome back</Text>
-          <Text className="text-sm text-muted-foreground text-center mt-2">
-            Sign in to access your account
-          </Text>
-          <TabGroup
-            value={activeTab}
-            onValueChange={(value) => {
-              setActiveTab(value as 'password' | 'otp');
-              setMessage('');
-              setShowOTPInput(false);
-            }}
-            items={[
-              { value: 'password', label: 'Password' },
-              { value: 'otp', label: 'OTP' },
-            ]}
-          />
-        </CardHeader>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1 bg-background"
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        className="p-6"
+      >
+        <Animated.View
+          entering={FadeInDown.delay(200).springify()}
+          className="flex-1 justify-center space-y-6"
+        >
+          {/* Welcome Text */}
+          <View className="space-y-2 mb-6">
+            <Text className="text-3xl font-bold text-primary">
+              Welcome back!
+            </Text>
+            <Text className="text-base text-muted-foreground">
+              Please sign in to your account
+            </Text>
+          </View>
 
-        <CardContent>
-          {activeTab === 'password' ? (
+          <Form form={form}>
             <View className="space-y-4">
-              <Controller
-                control={passwordForm.control}
+              <Form.Field
+                control={form.control}
                 name="email"
-                rules={{
-                  required: true,
-                  pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                }}
-                render={({ field, fieldState }) => (
-                  <View>
-                    <Input
-                      placeholder="Email"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      value={field.value}
-                      onChangeText={field.onChange}
-                    />
-                    {fieldState.error && (
-                      <Text className="text-sm text-destructive mt-1">
-                        Invalid email address
-                      </Text>
-                    )}
-                  </View>
+                render={({ field }) => (
+                  <Form.Item>
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control>
+                      <Input
+                        placeholder="Enter your email"
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        {...field}
+                      />
+                    </Form.Control>
+                    <Form.Message />
+                  </Form.Item>
                 )}
               />
 
-              <Controller
-                control={passwordForm.control}
+              <Form.Field
+                control={form.control}
                 name="password"
-                rules={{ required: true }}
-                render={({ field, fieldState }) => (
-                  <View>
-                    <Input
-                      placeholder="Password"
-                      secureTextEntry
-                      value={field.value}
-                      onChangeText={field.onChange}
-                    />
-                    {fieldState.error && (
-                      <Text className="text-sm text-destructive mt-1">
-                        Password is required
-                      </Text>
-                    )}
-                  </View>
+                render={({ field }) => (
+                  <Form.Item>
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control>
+                      <Input
+                        placeholder="Enter your password"
+                        secureTextEntry
+                        {...field}
+                      />
+                    </Form.Control>
+                    <Form.Message />
+                  </Form.Item>
                 )}
               />
+
+              {form.formState.errors.root && (
+                <Text className="text-destructive text-sm">
+                  {form.formState.errors.root.message}
+                </Text>
+              )}
+
+              <Link href="/auth/forgot-password" asChild>
+                <Button variant="link" className="p-0 h-auto">
+                  <Text className="text-sm text-primary">Forgot password?</Text>
+                </Button>
+              </Link>
 
               <Button
-                onPress={passwordForm.handleSubmit(handlePasswordLogin)}
+                className="w-full h-14"
+                size="lg"
+                onPress={form.handleSubmit(onSubmit)}
                 disabled={isLoading}
               >
-                <Text className="text-primary-foreground">
-                  {isLoading ? 'Signing in...' : 'Sign in'}
+                <Text className="text-primary-foreground text-lg font-semibold">
+                  {isLoading ? 'Signing in...' : 'Sign In'}
                 </Text>
               </Button>
             </View>
-          ) : (
+          </Form>
+
+          <View className="mt-6">
+            <View className="flex-row items-center space-x-2 mb-6">
+              <View className="flex-1 h-[1px] bg-border" />
+              <Text className="text-muted-foreground">or continue with</Text>
+              <View className="flex-1 h-[1px] bg-border" />
+            </View>
+
             <View className="space-y-4">
-              {/* OTP Form */}
-              <Controller
-                control={otpForm.control}
-                name="email"
-                rules={{
-                  required: true,
-                  pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                }}
-                render={({ field, fieldState }) => (
-                  <View>
-                    <Input
-                      placeholder="Email"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      value={field.value}
-                      onChangeText={field.onChange}
-                    />
-                    {fieldState.error && (
-                      <Text className="text-sm text-destructive mt-1">
-                        Invalid email address
-                      </Text>
-                    )}
-                  </View>
-                )}
-              />
-
-              {showOTPInput ? (
-                <View className="space-y-4">
-                  <Controller
-                    control={otpForm.control}
-                    name="otp"
-                    rules={{ required: true, pattern: /^[0-9]{6}$/ }}
-                    render={({ field, fieldState }) => (
-                      <View>
-                        <Input
-                          placeholder="Enter OTP"
-                          keyboardType="number-pad"
-                          maxLength={6}
-                          value={field.value}
-                          onChangeText={field.onChange}
-                        />
-                        {fieldState.error && (
-                          <Text className="text-sm text-destructive mt-1">
-                            Invalid OTP
-                          </Text>
-                        )}
-                      </View>
-                    )}
-                  />
-
-                  <Button
-                    onPress={otpForm.handleSubmit(handleOTPLogin)}
-                    disabled={isLoading}
-                  >
-                    <Text className="text-primary-foreground">
-                      {isLoading ? 'Verifying...' : 'Verify OTP'}
-                    </Text>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    onPress={() => handleRequestOTP(otpForm.getValues('email'))}
-                    disabled={isLoading}
-                  >
-                    <Text>Resend OTP</Text>
-                  </Button>
-                </View>
-              ) : (
-                <Button
-                  onPress={() => handleRequestOTP(otpForm.getValues('email'))}
-                  disabled={isLoading}
-                >
-                  <Text className="text-primary-foreground">
-                    {isLoading ? 'Sending OTP...' : 'Get OTP'}
-                  </Text>
-                </Button>
-              )}
-            </View>
-          )}
-
-          {message && (
-            <View
-              className={`mt-4 p-3 rounded-md ${
-                message.toLowerCase().includes('success')
-                  ? 'bg-green-50'
-                  : 'bg-destructive/10'
-              }`}
-            >
-              <Text
-                className={
-                  message.toLowerCase().includes('success')
-                    ? 'text-green-700'
-                    : 'text-destructive'
-                }
+              <Button
+                variant="outline"
+                className="w-full h-14"
+                onPress={() => {}}
               >
-                {message}
-              </Text>
-            </View>
-          )}
-        </CardContent>
+                <Text className="text-lg font-semibold">Google</Text>
+              </Button>
 
-        <CardFooter>
-          <Text className="text-sm text-muted-foreground text-center">
-            Don't have an account?{' '}
-            <Text
-              className="text-primary font-medium"
-              onPress={() => router.push('/auth/register')}
-            >
-              Sign up
+              <Button
+                variant="outline"
+                className="w-full h-14"
+                onPress={() => {}}
+              >
+                <Text className="text-lg font-semibold">Apple</Text>
+              </Button>
+            </View>
+          </View>
+
+          <View className="flex-row justify-center mt-6">
+            <Text className="text-muted-foreground">
+              Don't have an account?{' '}
             </Text>
-          </Text>
-        </CardFooter>
-      </Card>
-    </View>
+            <Link href="/auth/register" asChild>
+              <Button variant="link" className="p-0 h-auto">
+                <Text className="text-primary">Create Account</Text>
+              </Button>
+            </Link>
+          </View>
+        </Animated.View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

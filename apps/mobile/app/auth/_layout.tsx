@@ -5,9 +5,21 @@ export default function AuthLayout() {
     <Stack
       screenOptions={{
         headerShown: true,
-        headerBackTitle: 'Back',
+        headerStyle: {
+          backgroundColor: '#ffffff',
+        },
+        headerTintColor: '#0f172a',
+        headerTitleStyle: {
+          fontWeight: '600',
+        },
       }}
     >
+      <Stack.Screen
+        name="login"
+        options={{
+          title: 'Sign In',
+        }}
+      />
       <Stack.Screen
         name="register"
         options={{
@@ -15,9 +27,21 @@ export default function AuthLayout() {
         }}
       />
       <Stack.Screen
-        name="login"
+        name="forgot-password"
         options={{
-          title: 'Sign In',
+          title: 'Forgot Password',
+        }}
+      />
+      <Stack.Screen
+        name="verify-otp"
+        options={{
+          title: 'Verify OTP',
+        }}
+      />
+      <Stack.Screen
+        name="reset-password"
+        options={{
+          title: 'Reset Password',
         }}
       />
     </Stack>
