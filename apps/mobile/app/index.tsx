@@ -251,90 +251,60 @@ export default function LandingScreen() {
               elevation: 15,
               alignItems: 'center',
               justifyContent: 'center',
+              padding: 5,
             }}
           >
             <View
               style={{
-                width: 100,
-                height: 100,
-                borderRadius: 20,
-                backgroundColor: 'rgba(219, 217, 252, 1)',
+                width: '100%',
+                height: '100%',
+                borderRadius: 14,
+                backgroundColor: '#F9FAFB',
+                overflow: 'hidden',
                 alignItems: 'center',
                 justifyContent: 'center',
-                overflow: 'hidden',
               }}
             >
-              {/* Colorful stethoscope logo */}
-              <View style={{ width: 70, height: 50, position: 'relative' }}>
-                {/* Stethoscope base circle - blue */}
-                <View
-                  style={{
-                    position: 'absolute',
-                    width: 18,
-                    height: 18,
-                    borderRadius: 9,
-                    backgroundColor: '#4285F4',
-                    left: 26,
-                    top: 32,
-                  }}
-                />
+              <LinearGradient
+                colors={['#4F46E5', '#818CF8']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{
+                  position: 'absolute',
+                  width: '100%',
+                  height: '100%',
+                }}
+              />
 
-                {/* Left circle - green */}
-                <View
-                  style={{
-                    position: 'absolute',
-                    width: 12,
-                    height: 12,
-                    borderRadius: 6,
-                    backgroundColor: '#0F9D58',
-                    left: 16,
-                    top: 25,
-                  }}
-                />
+              {/* Simple medical cross */}
+              <View
+                style={{
+                  width: 50,
+                  height: 120,
+                  backgroundColor: 'white',
+                  borderRadius: 10,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 6,
+                  elevation: 5,
+                }}
+              />
 
-                {/* Right circle - yellow */}
-                <View
-                  style={{
-                    position: 'absolute',
-                    width: 12,
-                    height: 12,
-                    borderRadius: 6,
-                    backgroundColor: '#FBBC05',
-                    left: 40,
-                    top: 25,
-                  }}
-                />
-
-                {/* Top circle - red */}
-                <View
-                  style={{
-                    position: 'absolute',
-                    width: 12,
-                    height: 12,
-                    borderRadius: 6,
-                    backgroundColor: '#EA4335',
-                    left: 28,
-                    top: 14,
-                  }}
-                />
-
-                {/* Stethoscope tubing */}
-                <View
-                  style={{
-                    position: 'absolute',
-                    width: 36,
-                    height: 20,
-                    borderTopWidth: 3.5,
-                    borderLeftWidth: 3.5,
-                    borderRightWidth: 3.5,
-                    borderTopLeftRadius: 10,
-                    borderTopRightRadius: 10,
-                    borderColor: '#5F6368',
-                    left: 16,
-                    top: 0,
-                  }}
-                />
-              </View>
+              <View
+                style={{
+                  width: 120,
+                  height: 50,
+                  backgroundColor: 'white',
+                  borderRadius: 10,
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 6,
+                  elevation: 5,
+                }}
+              />
             </View>
           </View>
 
