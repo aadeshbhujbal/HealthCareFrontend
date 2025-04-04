@@ -10,21 +10,12 @@ import {
 import { Link } from 'expo-router';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
-import Animated, {
-  FadeInDown,
-  FadeInUp,
-  SlideInRight,
-  SlideInLeft,
-  interpolate,
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SvgUri } from 'react-native-svg';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2; // 48 = padding (16 * 2) + gap (16)
+const BORDER_RADIUS = 16; // Single consistent border radius across all UI elements
 
 type Feature = {
   title: string;
@@ -32,6 +23,7 @@ type Feature = {
   icon: string;
   colors: readonly [string, string];
   iconBg: string;
+  topBarColor: string; // Added for the colored top bars
 };
 
 const features: Feature[] = [
@@ -41,6 +33,7 @@ const features: Feature[] = [
     icon: '🤖',
     colors: ['#6366F1', '#4F46E5'] as const,
     iconBg: '#EEF2FF',
+    topBarColor: '#6366F1',
   },
   {
     title: 'Health Records',
@@ -48,6 +41,7 @@ const features: Feature[] = [
     icon: '🏥',
     colors: ['#10B981', '#059669'] as const,
     iconBg: '#ECFDF5',
+    topBarColor: '#10B981',
   },
   {
     title: 'Video Consults',
@@ -55,6 +49,7 @@ const features: Feature[] = [
     icon: '📱',
     colors: ['#F43F5E', '#E11D48'] as const,
     iconBg: '#FFF1F2',
+    topBarColor: '#F43F5E',
   },
   {
     title: 'Lab Results',
@@ -62,6 +57,7 @@ const features: Feature[] = [
     icon: '🔬',
     colors: ['#8B5CF6', '#7C3AED'] as const,
     iconBg: '#F3F0FF',
+    topBarColor: '#8B5CF6',
   },
   {
     title: 'Prescriptions',
@@ -69,6 +65,7 @@ const features: Feature[] = [
     icon: '💊',
     colors: ['#F59E0B', '#D97706'] as const,
     iconBg: '#FFFBEB',
+    topBarColor: '#F59E0B',
   },
   {
     title: 'Health Tips',
@@ -76,6 +73,7 @@ const features: Feature[] = [
     icon: '💡',
     colors: ['#EC4899', '#DB2777'] as const,
     iconBg: '#FDF2F8',
+    topBarColor: '#EC4899',
   },
 ];
 
@@ -124,67 +122,104 @@ const specialties = [
 export default function LandingScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-  const scrollY = useSharedValue(0);
-
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      scrollY.value = event.contentOffset.y;
-    },
-  });
 
   const renderFeatureCard = (feature: Feature, index: number) => {
-    const animatedStyle = useAnimatedStyle(() => {
-      const translateY = interpolate(
-        scrollY.value,
-        [0, 200],
-        [0, -index * 10],
-        'clamp'
-      );
-      return {
-        transform: [{ translateY }],
-      };
-    });
-
     return (
-      <Animated.View
+      <View
         key={feature.title}
-        entering={FadeInUp.delay(600 + index * 100).springify()}
-        style={[{ width: CARD_WIDTH }, animatedStyle]}
-        className="mb-4"
+        style={{
+          marginBottom: 16,
+        }}
       >
-        <LinearGradient
-          colors={feature.colors}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          className="p-6 rounded-[28px]"
+        {/* Colored top bar */}
+        <View
           style={{
-            elevation: 8,
-            shadowColor: feature.colors[0],
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.25,
+            height: 8,
+            backgroundColor: feature.topBarColor,
+            borderTopLeftRadius: BORDER_RADIUS,
+            borderTopRightRadius: BORDER_RADIUS,
+            marginHorizontal: 16,
+            shadowColor: feature.topBarColor,
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.3,
+            shadowRadius: 2,
+            elevation: 1,
+          }}
+        />
+
+        {/* Card body - separate from top bar */}
+        <View
+          style={{
+            backgroundColor: 'white',
+            borderRadius: BORDER_RADIUS,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.1,
             shadowRadius: 12,
+            elevation: 5,
+            padding: 16,
+            paddingVertical: 20,
+            marginHorizontal: 16,
+            borderTopLeftRadius: 0, // Flat top to connect with color bar
+            borderTopRightRadius: 0, // Flat top to connect with color bar
+            borderWidth: 1,
+            borderColor: 'rgba(0, 0, 0, 0.03)',
+            borderTopWidth: 0,
           }}
         >
-          <View
-            className="w-16 h-16 rounded-2xl items-center justify-center mb-4"
-            style={{ backgroundColor: feature.iconBg }}
-          >
-            <Text className="text-4xl">{feature.icon}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: BORDER_RADIUS,
+                backgroundColor: feature.iconBg,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 16,
+                shadowColor: feature.topBarColor,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 2,
+              }}
+            >
+              <Text style={{ fontSize: 18 }}>{feature.icon}</Text>
+            </View>
+
+            <View style={{ flex: 1 }}>
+              <Text
+                style={{
+                  fontSize: 17,
+                  fontWeight: '600',
+                  color: '#111827',
+                  marginBottom: 4,
+                  lineHeight: 22,
+                }}
+              >
+                {feature.title}
+              </Text>
+
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: '#6B7280',
+                  fontWeight: '400',
+                  lineHeight: 20,
+                }}
+              >
+                {feature.description}
+              </Text>
+            </View>
           </View>
-          <Text className="font-bold text-white text-xl mb-2">
-            {feature.title}
-          </Text>
-          <Text className="text-white/90 text-base">{feature.description}</Text>
-        </LinearGradient>
-      </Animated.View>
+        </View>
+      </View>
     );
   };
 
   return (
-    <Animated.ScrollView
-      className="flex-1 bg-background"
-      onScroll={scrollHandler}
-      scrollEventThrottle={16}
+    <ScrollView
+      style={{ flex: 1, backgroundColor: isDark ? '#0F172A' : '#F9FAFB' }}
       showsVerticalScrollIndicator={false}
     >
       {/* Hero Section */}
@@ -196,152 +231,274 @@ export default function LandingScreen() {
         }
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="px-6 pt-20 pb-16"
+        style={{ paddingHorizontal: 24, paddingTop: 80, paddingBottom: 64 }}
       >
-        <Animated.View
-          entering={FadeInDown.delay(200).springify()}
-          className="items-center"
-        >
+        <View style={{ alignItems: 'center' }}>
           <View
-            className="bg-white/10 backdrop-blur-lg p-8 rounded-[36px] mb-8 border border-white/20"
             style={{
+              width: 160,
+              height: 160,
+              backgroundColor: 'rgba(255, 255, 255, 0.15)',
+              borderRadius: BORDER_RADIUS,
+              overflow: 'hidden',
+              marginBottom: 24,
+              borderWidth: 1,
+              borderColor: 'rgba(255, 255, 255, 0.2)',
               shadowColor: isDark ? '#000' : '#4F46E5',
-              shadowOffset: { width: 0, height: 20 },
-              shadowOpacity: 0.25,
-              shadowRadius: 24,
-              elevation: 12,
+              shadowOffset: { width: 0, height: 10 },
+              shadowOpacity: 0.3,
+              shadowRadius: 20,
+              elevation: 15,
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <View className="w-32 h-32 bg-white/20 rounded-[28px] items-center justify-center">
-              <Text className="text-6xl">👨‍⚕️</Text>
+            <View
+              style={{
+                width: 100,
+                height: 100,
+                borderRadius: 20,
+                backgroundColor: 'rgba(219, 217, 252, 1)',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Colorful stethoscope logo */}
+              <View style={{ width: 70, height: 50, position: 'relative' }}>
+                {/* Stethoscope base circle - blue */}
+                <View
+                  style={{
+                    position: 'absolute',
+                    width: 18,
+                    height: 18,
+                    borderRadius: 9,
+                    backgroundColor: '#4285F4',
+                    left: 26,
+                    top: 32,
+                  }}
+                />
+
+                {/* Left circle - green */}
+                <View
+                  style={{
+                    position: 'absolute',
+                    width: 12,
+                    height: 12,
+                    borderRadius: 6,
+                    backgroundColor: '#0F9D58',
+                    left: 16,
+                    top: 25,
+                  }}
+                />
+
+                {/* Right circle - yellow */}
+                <View
+                  style={{
+                    position: 'absolute',
+                    width: 12,
+                    height: 12,
+                    borderRadius: 6,
+                    backgroundColor: '#FBBC05',
+                    left: 40,
+                    top: 25,
+                  }}
+                />
+
+                {/* Top circle - red */}
+                <View
+                  style={{
+                    position: 'absolute',
+                    width: 12,
+                    height: 12,
+                    borderRadius: 6,
+                    backgroundColor: '#EA4335',
+                    left: 28,
+                    top: 14,
+                  }}
+                />
+
+                {/* Stethoscope tubing */}
+                <View
+                  style={{
+                    position: 'absolute',
+                    width: 36,
+                    height: 20,
+                    borderTopWidth: 3.5,
+                    borderLeftWidth: 3.5,
+                    borderRightWidth: 3.5,
+                    borderTopLeftRadius: 10,
+                    borderTopRightRadius: 10,
+                    borderColor: '#5F6368',
+                    left: 16,
+                    top: 0,
+                  }}
+                />
+              </View>
             </View>
           </View>
 
-          <Text className="text-5xl font-bold text-center text-white mb-4">
+          <Text
+            style={{
+              fontSize: 36,
+              fontWeight: 'bold',
+              color: 'white',
+              textAlign: 'center',
+              marginBottom: 16,
+              lineHeight: 44,
+              width: '100%',
+              paddingHorizontal: 12,
+            }}
+          >
             HealthCare Pro
           </Text>
-          <Text className="text-xl text-center text-white/90 font-medium mb-3">
+
+          <Text
+            style={{
+              fontSize: 20,
+              color: 'rgba(255, 255, 255, 0.9)',
+              fontWeight: '500',
+              textAlign: 'center',
+              marginBottom: 12,
+            }}
+          >
             Your Health Journey Starts Here
           </Text>
-          <Text className="text-base text-center text-white/80 leading-6 max-w-[300px]">
+
+          <Text
+            style={{
+              fontSize: 16,
+              color: 'rgba(255, 255, 255, 0.8)',
+              textAlign: 'center',
+              lineHeight: 24,
+              maxWidth: 300,
+            }}
+          >
             Experience the future of healthcare with AI-powered features and
             seamless consultations
           </Text>
-        </Animated.View>
+        </View>
 
         {/* Stats Section */}
-        <Animated.View
-          entering={FadeInUp.delay(400).springify()}
-          className="mt-12 p-6 bg-white/10 backdrop-blur-lg rounded-[32px] border border-white/20"
+        <View
           style={{
-            shadowColor: isDark ? '#000' : '#4F46E5',
-            shadowOffset: { width: 0, height: 12 },
-            shadowOpacity: 0.2,
-            shadowRadius: 16,
-            elevation: 8,
+            marginTop: 48,
+            borderRadius: BORDER_RADIUS,
+            overflow: 'hidden',
+            shadowColor: '#4F46E5',
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.3,
+            shadowRadius: 20,
+            elevation: 10,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 255, 255, 0.2)',
           }}
         >
-          <View className="flex-row flex-wrap justify-between">
-            {stats.map((stat, index) => (
-              <Animated.View
-                key={stat.label}
-                entering={SlideInRight.delay(600 + index * 100)}
-                className="w-[45%] mb-6 items-center"
-              >
-                <View className="bg-white/20 w-14 h-14 rounded-2xl items-center justify-center mb-3">
-                  <Text className="text-3xl">{stat.icon}</Text>
-                </View>
-                <Text className="text-2xl font-bold text-white mb-1">
-                  {stat.value}
-                </Text>
-                <Text className="text-sm text-white/80 font-medium">
-                  {stat.label}
-                </Text>
-              </Animated.View>
-            ))}
-          </View>
-        </Animated.View>
-      </LinearGradient>
-
-      {/* Features Grid */}
-      <View className="px-6 py-12">
-        <Animated.View
-          entering={FadeInDown.delay(800).springify()}
-          className="mb-8"
-        >
-          <Text className="text-3xl font-bold text-foreground mb-2">
-            Smart Features
-          </Text>
-          <Text className="text-lg text-muted-foreground">
-            Experience the future of healthcare
-          </Text>
-        </Animated.View>
-
-        <View className="flex-row flex-wrap justify-between">
-          {features.map((feature, index) => renderFeatureCard(feature, index))}
-        </View>
-      </View>
-
-      {/* Specialties Section */}
-      <View className={`px-6 py-12 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <Text className="text-2xl font-bold mb-8 text-foreground">
-          Medical Specialties
-        </Text>
-        <View className="flex-row flex-wrap justify-between">
-          {specialties.map((specialty, index) => (
-            <Animated.View
-              key={specialty}
-              entering={SlideInLeft.delay(1000 + index * 50)}
-              className={`bg-card w-[48%] mb-4 p-5 rounded-[20px] border ${
-                isDark ? 'border-gray-800' : 'border-gray-100'
-              }`}
+          {/* Stats container with purple gradient background */}
+          <LinearGradient
+            colors={['#6366F1', '#818CF8']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{
+              padding: 24,
+              borderRadius: BORDER_RADIUS,
+            }}
+          >
+            <View
               style={{
-                shadowColor: isDark ? '#000' : '#4F46E5',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.1,
-                shadowRadius: 8,
-                elevation: 4,
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
               }}
             >
-              <Text className="font-medium text-foreground">{specialty}</Text>
-            </Animated.View>
-          ))}
-        </View>
-      </View>
-
-      {/* Enhanced Testimonials */}
-      <View className={`px-6 py-12 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <Text className="text-2xl font-bold mb-8 text-foreground">
-          Success Stories
-        </Text>
-        {testimonials.map((testimonial, index) => (
-          <Animated.View
-            key={testimonial.author}
-            entering={FadeInUp.delay(1400 + index * 100)}
-            className={`bg-card p-6 rounded-[20px] mb-6 border ${
-              isDark ? 'border-gray-700' : 'border-gray-200'
-            } shadow-lg`}
-          >
-            <View className="flex-row items-center mb-4">
-              <Image
-                source={testimonial.image}
-                style={{ width: 56, height: 56 }}
-                className="rounded-full mr-4"
-              />
-              <View>
-                <Text className="font-semibold text-foreground text-base">
-                  {testimonial.author}
-                </Text>
-                <Text className="text-sm text-muted-foreground">
-                  {testimonial.role}
-                </Text>
-              </View>
+              {stats.map((stat) => (
+                <View
+                  key={stat.label}
+                  style={{
+                    width: '48%',
+                    marginBottom: 16,
+                    alignItems: 'center',
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: BORDER_RADIUS,
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: 8,
+                    }}
+                  >
+                    <Text style={{ fontSize: 22 }}>{stat.icon}</Text>
+                  </View>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                      color: 'white',
+                      marginBottom: 2,
+                    }}
+                  >
+                    {stat.value}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: 'rgba(255, 255, 255, 0.8)',
+                    }}
+                  >
+                    {stat.label}
+                  </Text>
+                </View>
+              ))}
             </View>
-            <Text className="text-base italic text-foreground leading-6">
-              "{testimonial.quote}"
-            </Text>
-          </Animated.View>
-        ))}
+          </LinearGradient>
+        </View>
+      </LinearGradient>
+
+      {/* Features Section */}
+      <View
+        style={{
+          paddingTop: 24,
+          paddingBottom: 40,
+          backgroundColor: '#F9FAFB',
+        }}
+      >
+        <View
+          style={{
+            marginBottom: 24,
+            paddingHorizontal: 24,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: '700',
+              color: '#111827',
+              marginBottom: 4,
+              marginTop: 12,
+              lineHeight: 32,
+            }}
+          >
+            Smart Features
+          </Text>
+
+          <Text
+            style={{
+              fontSize: 16,
+              color: '#6B7280',
+              lineHeight: 24,
+            }}
+          >
+            Experience the future of healthcare
+          </Text>
+        </View>
+
+        <View style={{ paddingBottom: 12 }}>
+          {features.map((feature, index) => renderFeatureCard(feature, index))}
+        </View>
       </View>
 
       {/* CTA Section */}
@@ -349,26 +506,44 @@ export default function LandingScreen() {
         colors={isDark ? ['#0F172A', '#1E293B'] : ['#4F46E5', '#6366F1']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="px-6 py-12"
+        style={{ padding: 24, paddingVertical: 48 }}
       >
-        <Text className="text-3xl font-bold text-white mb-4 text-center">
+        <Text
+          style={{
+            fontSize: 28,
+            fontWeight: 'bold',
+            color: 'white',
+            marginBottom: 16,
+            textAlign: 'center',
+            lineHeight: 36,
+          }}
+        >
           Ready to Transform{'\n'}Your Healthcare?
         </Text>
-        <Text className="text-base text-white/80 text-center mb-8 leading-6">
+
+        <Text
+          style={{
+            fontSize: 16,
+            color: 'rgba(255, 255, 255, 0.8)',
+            textAlign: 'center',
+            marginBottom: 32,
+            lineHeight: 24,
+          }}
+        >
           Join millions of users who have revolutionized their healthcare
           experience
         </Text>
 
-        <Animated.View
-          entering={FadeInUp.delay(1200).springify()}
-          className="space-y-4"
-        >
+        <View style={{ gap: 16 }}>
           <Link href="/auth/register" asChild>
             <Button
-              className="w-full h-14 bg-white shadow-xl rounded-[20px]"
+              className="w-full h-14 bg-white shadow-xl"
+              style={{ borderRadius: BORDER_RADIUS }}
               size="lg"
             >
-              <Text className="text-primary text-lg font-bold">
+              <Text
+                style={{ color: '#4F46E5', fontSize: 18, fontWeight: 'bold' }}
+              >
                 Get Started Now
               </Text>
             </Button>
@@ -377,18 +552,30 @@ export default function LandingScreen() {
           <Link href="/auth/login" asChild>
             <Button
               variant="outline"
-              className="w-full h-14 border-2 border-white rounded-[20px]"
+              className="w-full h-14 border-2 border-white mt-4"
+              style={{ borderRadius: BORDER_RADIUS }}
               size="lg"
             >
-              <Text className="text-white text-lg font-bold">Sign In</Text>
+              <Text
+                style={{ color: '#4F46E5', fontSize: 18, fontWeight: 'bold' }}
+              >
+                Sign In
+              </Text>
             </Button>
           </Link>
 
-          <Text className="text-sm text-center text-white/80 mt-4">
+          <Text
+            style={{
+              fontSize: 14,
+              color: 'rgba(255, 255, 255, 0.8)',
+              textAlign: 'center',
+              marginTop: 16,
+            }}
+          >
             By continuing, you agree to our Terms of Service
           </Text>
-        </Animated.View>
+        </View>
       </LinearGradient>
-    </Animated.ScrollView>
+    </ScrollView>
   );
 }
