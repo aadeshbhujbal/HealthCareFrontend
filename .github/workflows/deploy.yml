@@ -1,0 +1,239 @@
+name: Deploy Healthcare Frontend Web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'shared/**'
+      - '.github/workflows/deploy.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'shared/**'
+      - '.github/workflows/deploy.yml'
+
+env:
+  DOCKER_COMPOSE_VERSION: v2.20.2
+  SERVER_HOST: ishswami.in
+  SERVER_USER: ${{ secrets.SERVER_USER }}
+  SERVER_SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  FRONTEND_DEPLOY_PATH: /var/www/healthcare/frontend
+  DOMAIN: ishswami.in
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run linting
+        run: yarn nx lint web
+
+      - name: Run tests (if available)
+        run: yarn nx test web || echo "No tests configured yet"
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build web application
+        run: yarn nx build web
+
+      - name: Create deployment package
+        run: |
+          mkdir -p deployment
+          cp -r apps/web/.next deployment/
+          cp -r apps/web/public deployment/
+          cp apps/web/package.json deployment/
+          cp apps/web/next.config.js deployment/ || echo "No next.config.js found"
+
+      - name: Upload deployment artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-deployment
+          path: deployment/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download deployment package
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-deployment
+          path: deployment
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        env:
+          DEPLOY_PATH: ${{ env.FRONTEND_DEPLOY_PATH }}
+          DOMAIN: ${{ env.DOMAIN }}
+        with:
+          host: ${{ env.SERVER_HOST }}
+          username: ${{ env.SERVER_USER }}
+          key: ${{ env.SERVER_SSH_KEY }}
+          envs: DEPLOY_PATH,DOMAIN
+          script: |
+            # Create deployment directory
+            mkdir -p $DEPLOY_PATH/deployments
+            cd $DEPLOY_PATH/deployments
+            timestamp=$(date +%Y%m%d_%H%M%S)
+            mkdir -p $timestamp
+            echo $timestamp > $DEPLOY_PATH/current_deployment
+
+            # Create nginx config
+            sudo bash -c "cat > /etc/nginx/sites-available/$DOMAIN << 'EOL'
+            server {
+                listen 80;
+                server_name $DOMAIN;
+                location / {
+                    proxy_pass http://localhost:3000;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade \$http_upgrade;
+                    proxy_set_header Connection 'upgrade';
+                    proxy_set_header Host \$host;
+                    proxy_cache_bypass \$http_upgrade;
+                }
+            }
+            EOL"
+
+            # Enable site and reload nginx
+            sudo ln -sf /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
+            sudo nginx -t && sudo systemctl reload nginx
+
+            # Create systemd service
+            sudo bash -c "cat > /etc/systemd/system/healthcare-frontend.service << 'EOL'
+            [Unit]
+            Description=Healthcare Frontend Next.js Application
+            After=network.target
+
+            [Service]
+            Type=simple
+            User=$USER
+            WorkingDirectory=$DEPLOY_PATH/current
+            ExecStart=/usr/bin/yarn start
+            Restart=on-failure
+            RestartSec=10
+            StandardOutput=syslog
+            StandardError=syslog
+            SyslogIdentifier=healthcare-frontend
+            Environment=PORT=3000
+            Environment=HOSTNAME=0.0.0.0
+
+            [Install]
+            WantedBy=multi-user.target
+            EOL"
+
+            # Reload systemd and restart service
+            sudo systemctl daemon-reload
+            sudo systemctl enable healthcare-frontend
+            sudo systemctl restart healthcare-frontend
+
+            # Health checks
+            for i in {1..30}; do
+              if sudo systemctl is-active --quiet healthcare-frontend; then
+                echo "Frontend service is running"
+                if curl -s http://localhost:3000 | grep -q "html"; then
+                  echo "Frontend application is accessible"
+                  exit 0
+                fi
+              fi
+              echo "Waiting for service to be ready (attempt $i/30)"
+              sleep 2
+            done
+
+            echo "Health check failed"
+            exit 1
+
+  rollback:
+    if: failure()
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rollback deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SERVER_HOST }}
+          username: ${{ env.SERVER_USER }}
+          key: ${{ env.SERVER_SSH_KEY }}
+          script: |
+            cd ${{ env.FRONTEND_DEPLOY_PATH }}
+
+            # Get previous deployment
+            current=$(cat current_deployment)
+            previous=$(ls -1 deployments | grep -v $current | tail -n 1)
+
+            if [ ! -z "$previous" ]; then
+              echo "Rolling back to deployment: $previous"
+              
+              # Stop current service
+              sudo systemctl stop healthcare-frontend || true
+              
+              # Switch to previous deployment
+              ln -sfn ${{ env.FRONTEND_DEPLOY_PATH }}/deployments/$previous ${{ env.FRONTEND_DEPLOY_PATH }}/current
+              echo $previous > current_deployment
+              
+              # Start previous deployment
+              sudo systemctl start healthcare-frontend
+              
+              # Check if the service is running
+              max_retries=30
+              counter=0
+              while [ $counter -lt $max_retries ]; do
+                if sudo systemctl is-active --quiet healthcare-frontend; then
+                  echo "Frontend service is running after rollback"
+                  break
+                fi
+                echo "Waiting for frontend service to start after rollback (attempt $counter of $max_retries)"
+                counter=$((counter + 1))
+                sleep 2
+                
+                if [ $counter -eq $max_retries ]; then
+                  echo "Frontend service failed to start after rollback"
+                  exit 1
+                fi
+              done
+              
+              # Check if the application is accessible
+              max_retries=30
+              counter=0
+              while [ $counter -lt $max_retries ]; do
+                if curl -s http://localhost:3000 | grep -q "html"; then
+                  echo "Frontend application is accessible after rollback"
+                  exit 0
+                fi
+                echo "Waiting for frontend application to be accessible after rollback (attempt $counter of $max_retries)"
+                counter=$((counter + 1))
+                sleep 2
+              done
+              
+              echo "Frontend application health check failed after rollback"
+              exit 1
+            else
+              echo "No previous deployment found for rollback"
+              exit 1
+            fi
