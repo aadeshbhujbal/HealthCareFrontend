@@ -21,6 +21,9 @@ env:
   SERVER_SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
   FRONTEND_DEPLOY_PATH: /var/www/healthcare/frontend
   DOMAIN: ishswami.in
+  NODE_ENV: production
+  NEXT_PUBLIC_API_URL: https://api.ishswami.in
+  NEXT_PUBLIC_DOMAIN: ishswami.in
 
 jobs:
   test:
@@ -58,6 +61,14 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Create production env file
+        run: |
+          cat > apps/web/.env.production << EOL
+          NEXT_PUBLIC_API_URL=${{ env.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_DOMAIN=${{ env.NEXT_PUBLIC_DOMAIN }}
+          NODE_ENV=production
+          EOL
+
       - name: Build web application
         run: yarn nx build web
 
@@ -68,6 +79,7 @@ jobs:
           cp -r apps/web/public deployment/
           cp apps/web/package.json deployment/
           cp apps/web/next.config.js deployment/ || echo "No next.config.js found"
+          cp apps/web/.env.production deployment/
 
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v3
@@ -105,11 +117,44 @@ jobs:
             mkdir -p $timestamp
             echo $timestamp > $DEPLOY_PATH/current_deployment
 
-            # Create nginx config
+            # Copy deployment files
+            cp -r deployment/* $DEPLOY_PATH/deployments/$timestamp/
+            ln -sfn $DEPLOY_PATH/deployments/$timestamp $DEPLOY_PATH/current
+
+            # Create nginx config with SSL
             sudo bash -c "cat > /etc/nginx/sites-available/$DOMAIN << 'EOL'
             server {
                 listen 80;
+                listen [::]:80;
                 server_name $DOMAIN;
+                return 301 https://$server_name$request_uri;
+            }
+
+            server {
+                listen 443 ssl http2;
+                listen [::]:443 ssl http2;
+                server_name $DOMAIN;
+
+                ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
+                ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
+                ssl_session_timeout 1d;
+                ssl_session_cache shared:SSL:50m;
+                ssl_session_tickets off;
+
+                # Modern configuration
+                ssl_protocols TLSv1.2 TLSv1.3;
+                ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+                ssl_prefer_server_ciphers off;
+
+                # HSTS (uncomment if you're sure)
+                # add_header Strict-Transport-Security "max-age=63072000" always;
+
+                # OCSP Stapling
+                ssl_stapling on;
+                ssl_stapling_verify on;
+                resolver 8.8.8.8 8.8.4.4 valid=300s;
+                resolver_timeout 5s;
+
                 location / {
                     proxy_pass http://localhost:3000;
                     proxy_http_version 1.1;
@@ -117,6 +162,22 @@ jobs:
                     proxy_set_header Connection 'upgrade';
                     proxy_set_header Host \$host;
                     proxy_cache_bypass \$http_upgrade;
+                    proxy_set_header X-Real-IP \$remote_addr;
+                    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto \$scheme;
+
+                    # Security headers
+                    add_header X-Frame-Options "SAMEORIGIN" always;
+                    add_header X-XSS-Protection "1; mode=block" always;
+                    add_header X-Content-Type-Options "nosniff" always;
+                    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+                    add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
+                }
+
+                # Cache static files
+                location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg)$ {
+                    expires 30d;
+                    add_header Cache-Control "public, no-transform";
                 }
             }
             EOL"
@@ -125,7 +186,7 @@ jobs:
             sudo ln -sf /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
             sudo nginx -t && sudo systemctl reload nginx
 
-            # Create systemd service
+            # Create systemd service with environment variables
             sudo bash -c "cat > /etc/systemd/system/healthcare-frontend.service << 'EOL'
             [Unit]
             Description=Healthcare Frontend Next.js Application
@@ -135,14 +196,15 @@ jobs:
             Type=simple
             User=$USER
             WorkingDirectory=$DEPLOY_PATH/current
-            ExecStart=/usr/bin/yarn start
-            Restart=on-failure
-            RestartSec=10
-            StandardOutput=syslog
-            StandardError=syslog
-            SyslogIdentifier=healthcare-frontend
+            Environment=NODE_ENV=production
             Environment=PORT=3000
             Environment=HOSTNAME=0.0.0.0
+            ExecStart=/usr/bin/yarn start
+            Restart=always
+            RestartSec=10
+            StandardOutput=journal
+            StandardError=journal
+            SyslogIdentifier=healthcare-frontend
 
             [Install]
             WantedBy=multi-user.target
@@ -153,20 +215,26 @@ jobs:
             sudo systemctl enable healthcare-frontend
             sudo systemctl restart healthcare-frontend
 
-            # Health checks
+            # Health checks with improved logging
+            echo "Starting health checks..."
             for i in {1..30}; do
               if sudo systemctl is-active --quiet healthcare-frontend; then
-                echo "Frontend service is running"
-                if curl -s http://localhost:3000 | grep -q "html"; then
-                  echo "Frontend application is accessible"
+                echo "Frontend service is running (attempt $i/30)"
+                if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200"; then
+                  echo "Frontend application is accessible and returning 200 OK"
                   exit 0
+                else
+                  echo "Frontend is running but not returning 200 OK"
                 fi
+              else
+                echo "Frontend service is not running (attempt $i/30)"
+                sudo systemctl status healthcare-frontend --no-pager
               fi
-              echo "Waiting for service to be ready (attempt $i/30)"
               sleep 2
             done
 
-            echo "Health check failed"
+            echo "Health check failed - collecting logs"
+            sudo journalctl -u healthcare-frontend --no-pager -n 100
             exit 1
 
   rollback:
@@ -200,38 +268,23 @@ jobs:
               # Start previous deployment
               sudo systemctl start healthcare-frontend
               
-              # Check if the service is running
+              # Verify rollback
               max_retries=30
               counter=0
               while [ $counter -lt $max_retries ]; do
                 if sudo systemctl is-active --quiet healthcare-frontend; then
-                  echo "Frontend service is running after rollback"
-                  break
+                  if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200"; then
+                    echo "Rollback successful - application is accessible"
+                    exit 0
+                  fi
                 fi
-                echo "Waiting for frontend service to start after rollback (attempt $counter of $max_retries)"
-                counter=$((counter + 1))
-                sleep 2
-                
-                if [ $counter -eq $max_retries ]; then
-                  echo "Frontend service failed to start after rollback"
-                  exit 1
-                fi
-              done
-              
-              # Check if the application is accessible
-              max_retries=30
-              counter=0
-              while [ $counter -lt $max_retries ]; do
-                if curl -s http://localhost:3000 | grep -q "html"; then
-                  echo "Frontend application is accessible after rollback"
-                  exit 0
-                fi
-                echo "Waiting for frontend application to be accessible after rollback (attempt $counter of $max_retries)"
+                echo "Waiting for rollback to complete (attempt $counter/$max_retries)"
                 counter=$((counter + 1))
                 sleep 2
               done
               
-              echo "Frontend application health check failed after rollback"
+              echo "Rollback failed - collecting logs"
+              sudo journalctl -u healthcare-frontend --no-pager -n 100
               exit 1
             else
               echo "No previous deployment found for rollback"
