@@ -15,7 +15,6 @@ on:
       - '.github/workflows/deploy.yml'
 
 env:
-  DOCKER_COMPOSE_VERSION: v2.20.2
   SERVER_HOST: 82.208.20.16
   SERVER_USER: ${{ secrets.SERVER_USER }}
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -70,16 +69,14 @@ jobs:
           EOL
 
       - name: Build web application
-        run: yarn nx build web
+        run: |
+          yarn nx build web
+          yarn nx export web
 
       - name: Create deployment package
         run: |
           mkdir -p deployment
-          cp -r apps/web/.next deployment/
-          cp -r apps/web/public deployment/
-          cp apps/web/package.json deployment/
-          cp apps/web/next.config.js deployment/ || echo "No next.config.js found"
-          cp apps/web/.env.production deployment/
+          cp -r apps/web/out/* deployment/
 
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v3
@@ -91,8 +88,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
       - name: Download deployment package
         uses: actions/download-artifact@v3
         with:
@@ -119,62 +114,18 @@ jobs:
 
             # Copy deployment files
             cp -r deployment/* $DEPLOY_PATH/deployments/$timestamp/
+
+            # Update symlink to new deployment
             ln -sfn $DEPLOY_PATH/deployments/$timestamp $DEPLOY_PATH/current
 
-            # Install dependencies
-            cd $DEPLOY_PATH/current
-            yarn install --production
-
-            # Create systemd service
-            sudo bash -c "cat > /etc/systemd/system/healthcare-frontend.service << 'EOL'
-            [Unit]
-            Description=Healthcare Frontend Next.js Application
-            After=network.target
-
-            [Service]
-            Type=simple
-            User=$USER
-            WorkingDirectory=$DEPLOY_PATH/current
-            Environment=NODE_ENV=production
-            Environment=PORT=3000
-            Environment=HOSTNAME=0.0.0.0
-            ExecStart=/usr/bin/yarn start
-            Restart=always
-            RestartSec=10
-            StandardOutput=journal
-            StandardError=journal
-            SyslogIdentifier=healthcare-frontend
-
-            [Install]
-            WantedBy=multi-user.target
-            EOL"
-
-            # Reload systemd and restart service
-            sudo systemctl daemon-reload
-            sudo systemctl enable healthcare-frontend
-            sudo systemctl restart healthcare-frontend
-
-            # Health checks
-            echo "Starting health checks..."
-            for i in {1..30}; do
-              if sudo systemctl is-active --quiet healthcare-frontend; then
-                echo "Frontend service is running (attempt $i/30)"
-                if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200"; then
-                  echo "Frontend application is accessible and returning 200 OK"
-                  exit 0
-                else
-                  echo "Frontend is running but not returning 200 OK"
-                fi
-              else
-                echo "Frontend service is not running (attempt $i/30)"
-                sudo systemctl status healthcare-frontend --no-pager
-              fi
-              sleep 2
-            done
-
-            echo "Health check failed - collecting logs"
-            sudo journalctl -u healthcare-frontend --no-pager -n 100
-            exit 1
+            # Verify deployment
+            if [ -f "$DEPLOY_PATH/current/index.html" ]; then
+              echo "Deployment successful - index.html found"
+              exit 0
+            else
+              echo "Deployment failed - index.html not found"
+              exit 1
+            fi
 
   rollback:
     if: failure()
@@ -197,30 +148,18 @@ jobs:
             if [ ! -z "$previous" ]; then
               echo "Rolling back to deployment: $previous"
               
-              # Stop current service
-              sudo systemctl stop healthcare-frontend || true
-              
               # Switch to previous deployment
               ln -sfn ${{ env.FRONTEND_DEPLOY_PATH }}/deployments/$previous ${{ env.FRONTEND_DEPLOY_PATH }}/current
               echo $previous > current_deployment
               
-              # Start previous deployment
-              sudo systemctl start healthcare-frontend
-              
               # Verify rollback
-              for i in {1..30}; do
-                if sudo systemctl is-active --quiet healthcare-frontend; then
-                  if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200"; then
-                    echo "Rollback successful"
-                    exit 0
-                  fi
-                fi
-                echo "Waiting for rollback to complete (attempt $i/30)"
-                sleep 2
-              done
-              
-              echo "Rollback failed"
-              exit 1
+              if [ -f "${{ env.FRONTEND_DEPLOY_PATH }}/current/index.html" ]; then
+                echo "Rollback successful"
+                exit 0
+              else
+                echo "Rollback failed - index.html not found"
+                exit 1
+              fi
             else
               echo "No previous deployment found for rollback"
               exit 1
