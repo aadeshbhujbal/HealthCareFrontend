@@ -13,6 +13,8 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false,
   },
+  output: 'standalone', // Optimized for production deployment
+  distDir: '.next', // Explicitly set the build output directory
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -55,16 +57,24 @@ const nextConfig = {
         hostname: 'api.ishswami.in',
       },
     ],
+    // Optimize image handling
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    minimumCacheTTL: 60,
   },
   experimental: {
     serverActions: {
       allowedOrigins: ['localhost:3000', 'ishswami.in', 'api.ishswami.in'],
     },
+    // Enable modern optimizations
+    optimizeCss: true,
+    scrollRestoration: true,
   },
   // Production optimizations
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
+  generateEtags: true,
   async headers() {
     return [
       {
@@ -93,6 +103,28 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

@@ -11,7 +11,10 @@
     "build": "next build",
     "export": "next export",
     "build:web": "yarn nx build web",
-    "export:web": "yarn nx export web"
+    "export:web": "yarn nx export web",
+    "build:prod": "NODE_ENV=production nx build web --prod",
+    "analyze": "ANALYZE=true nx build web",
+    "clean": "nx reset && rm -rf dist .next node_modules/.cache"
   },
   "private": true,
   "dependencies": {
