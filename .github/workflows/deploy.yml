@@ -1,146 +1,72 @@
-name: Deploy Healthcare Frontend Web
+name: Deploy Frontend
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
-      - 'apps/web/**'
-      - 'shared/**'
-      - '.github/workflows/deploy.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'apps/web/**'
-      - 'shared/**'
-      - '.github/workflows/deploy.yml'
+      - 'HealthcareFrontend/HealthCareFrontend-Web/**'
+      - 'HealthcareFrontend/HealthCareFrontend-Shared/**'
 
 env:
-  SERVER_HOST: 82.208.20.16
-  SERVER_USER: ${{ secrets.SERVER_USER }}
-  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  SERVER_HOST: ishswami.in
+  SERVER_USER: ubuntu
   FRONTEND_DEPLOY_PATH: /var/www/healthcare/frontend
-  DOMAIN: ishswami.in
-  NODE_ENV: production
-  NEXT_PUBLIC_API_URL: https://api.ishswami.in
-  NEXT_PUBLIC_DOMAIN: ishswami.in
+  NODE_VERSION: '18.x'
 
 jobs:
-  build-and-deploy:
+  deploy:
+    name: Deploy Frontend
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
-      - name: Set up Node.js
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
-          cache: 'yarn'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          yarn install --frozen-lockfile
-          yarn add -D nx@latest @nrwl/cli@latest
-
-      - name: Install Nx globally
-        run: npm install -g nx
+        run: npm ci
+        working-directory: HealthcareFrontend/HealthCareFrontend-Web
 
       - name: Create production env file
         run: |
-          cat > apps/web/.env.production << EOL
-          NEXT_PUBLIC_API_URL=${{ env.NEXT_PUBLIC_API_URL }}
-          NEXT_PUBLIC_DOMAIN=${{ env.NEXT_PUBLIC_DOMAIN }}
-          NODE_ENV=production
-          EOL
+          echo "VITE_API_URL=https://api.ishswami.in" > .env.production
+        working-directory: HealthcareFrontend/HealthCareFrontend-Web
 
-      - name: Build web application
-        run: |
-          npx nx build web
-          npx nx export web || yarn next export
+      - name: Build
+        run: npm run build
+        working-directory: HealthcareFrontend/HealthCareFrontend-Web
 
-      - name: Create deployment package
+      - name: Setup SSH
         run: |
-          mkdir -p deployment
-          if [ -d "dist/apps/web/exported" ]; then
-            cp -r dist/apps/web/exported/* deployment/
-          elif [ -d "apps/web/out" ]; then
-            cp -r apps/web/out/* deployment/
-          else
-            echo "Could not find build output directory"
-            exit 1
-          fi
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ env.SERVER_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to server
-        uses: appleboy/ssh-action@master
-        env:
-          DEPLOY_PATH: ${{ env.FRONTEND_DEPLOY_PATH }}
-          DOMAIN: ${{ env.DOMAIN }}
-        with:
-          host: ${{ env.SERVER_HOST }}
-          username: ${{ env.SERVER_USER }}
-          key: ${{ env.SSH_PRIVATE_KEY }}
-          envs: DEPLOY_PATH,DOMAIN
-          script: |
-            # Create deployment directory
-            mkdir -p $DEPLOY_PATH/deployments
-            cd $DEPLOY_PATH/deployments
-            timestamp=$(date +%Y%m%d_%H%M%S)
-            mkdir -p $timestamp
-            echo $timestamp > $DEPLOY_PATH/current_deployment
+        run: |
+          # Create a new release directory
+          ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ${{ env.FRONTEND_DEPLOY_PATH }}/releases/$(date +%Y%m%d_%H%M%S)"
 
-            # Copy deployment files
-            cp -r deployment/* $DEPLOY_PATH/deployments/$timestamp/
+          # Upload the build
+          scp -i ~/.ssh/deploy_key -r HealthcareFrontend/HealthCareFrontend-Web/dist/* ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.FRONTEND_DEPLOY_PATH }}/releases/$(date +%Y%m%d_%H%M%S)
 
-            # Update symlink to new deployment
-            ln -sfn $DEPLOY_PATH/deployments/$timestamp $DEPLOY_PATH/current
+          # Update the current symlink
+          ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "cd ${{ env.FRONTEND_DEPLOY_PATH }} && \
+            rm -f current && \
+            ln -s releases/$(date +%Y%m%d_%H%M%S) current"
 
-            # Set proper permissions
-            chmod -R 755 $DEPLOY_PATH/deployments/$timestamp
+          # Keep only the last 5 releases
+          ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "cd ${{ env.FRONTEND_DEPLOY_PATH }}/releases && \
+            ls -1t | tail -n +6 | xargs -r rm -rf"
 
-            # Verify deployment
-            if [ -f "$DEPLOY_PATH/current/index.html" ]; then
-              echo "Deployment successful - index.html found"
-              exit 0
-            else
-              echo "Deployment failed - index.html not found"
-              exit 1
-            fi
-
-  rollback:
-    if: failure()
-    needs: build-and-deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Rollback deployment
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_HOST }}
-          username: ${{ env.SERVER_USER }}
-          key: ${{ env.SSH_PRIVATE_KEY }}
-          script: |
-            cd ${{ env.FRONTEND_DEPLOY_PATH }}
-
-            # Get previous deployment
-            current=$(cat current_deployment)
-            previous=$(ls -1 deployments | grep -v $current | tail -n 1)
-
-            if [ ! -z "$previous" ]; then
-              echo "Rolling back to deployment: $previous"
-              
-              # Switch to previous deployment
-              ln -sfn ${{ env.FRONTEND_DEPLOY_PATH }}/deployments/$previous ${{ env.FRONTEND_DEPLOY_PATH }}/current
-              echo $previous > current_deployment
-              
-              # Verify rollback
-              if [ -f "${{ env.FRONTEND_DEPLOY_PATH }}/current/index.html" ]; then
-                echo "Rollback successful"
-                exit 0
-              else
-                echo "Rollback failed - index.html not found"
-                exit 1
-              fi
-            else
-              echo "No previous deployment found for rollback"
-              exit 1
-            fi
+      - name: Verify deployment
+        run: |
+          # Check if index.html exists in the new deployment
+          ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "test -f ${{ env.FRONTEND_DEPLOY_PATH }}/current/index.html"
