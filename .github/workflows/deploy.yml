@@ -50,10 +50,9 @@ jobs:
       - name: Initialize Nx workspace
         run: |
           echo "Initializing Nx workspace..."
-          yarn add -D -W @nx/cli@20.6.1
-          yarn add -D -W @nx/workspace@20.6.1
-          yarn add -D -W nx@20.6.1
-          yarn nx --version || npx nx --version
+          npm install -g nx@20.6.1
+          nx --version
+          nx reset
 
       - name: Create production env file
         run: |
@@ -132,11 +131,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          npx nx build shared-services
+          nx build shared-services
 
       - name: Build web application
         run: |
-          NODE_OPTIONS="--max_old_space_size=4096" npx nx build web --configuration=production
+          NODE_OPTIONS="--max_old_space_size=4096" nx build web --configuration=production
 
       - name: Create deployment package
         run: |
