@@ -32,11 +32,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Verify Node.js version
-        run: |
-          node --version
-          npm --version
-
       - name: Install Yarn
         run: |
           corepack enable
@@ -52,8 +47,7 @@ jobs:
         run: |
           yarn config set nodeLinker node-modules
           yarn install
-          yarn add -W -D @nx/next@latest @nx/react@latest @nx/workspace@latest nx@latest webpack@5.89.0 @rspack/core@1.1.5 @swc/types@0.1.0 eslint@8.56.0
-          yarn add -W date-fns@3.3.1
+          yarn add -W -D @nx/js@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1 @nx/workspace@20.6.1 nx@20.6.1
 
       - name: Create production env file
         run: |
@@ -65,8 +59,9 @@ jobs:
 
       - name: Build web application
         run: |
-          npx nx build web --configuration=production
-          npx nx export web || (cd apps/web && npx next export)
+          yarn build:services
+          yarn build:web
+          yarn export:web
 
       - name: Create deployment package
         run: |
