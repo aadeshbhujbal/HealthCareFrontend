@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  NODE_VERSION: '18.x'
+  NODE_VERSION: '20.19.0'
   SERVER_HOST: ishswami.in
   SERVER_USER: ${{ secrets.SERVER_USER }}
   SERVER_SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -31,21 +31,27 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
 
-      - name: Clean package lock files
+      - name: Verify Node.js version
         run: |
-          rm -f package-lock.json
-          rm -f yarn.lock
+          node --version
+          npm --version
+
+      - name: Install Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@1.22.22 --activate
+          yarn --version
 
       - name: Install dependencies
         run: |
-          yarn install --frozen-lockfile
-          yarn workspace @healthcare/web add nx@latest @nrwl/cli@latest --dev
-          yarn add -W -D eslint@^8.0.0 webpack@^5.1.0 @rspack/core@^1.1.5 @swc/types@^0.1.0 date-fns@^3.0.0
+          yarn config set nodeLinker node-modules
+          yarn install
+          yarn add -D nx@21.0.3 @nrwl/cli@21.0.3 webpack@5.89.0 @rspack/core@1.1.5 @swc/types@0.1.0 eslint@8.56.0
+          yarn add date-fns@3.3.1
 
       - name: Install Nx globally
-        run: yarn global add nx
+        run: yarn global add nx@21.0.3
 
       - name: Create production env file
         run: |
