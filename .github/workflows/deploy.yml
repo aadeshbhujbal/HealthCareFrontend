@@ -48,20 +48,17 @@ jobs:
           rm -f package-lock.json
           rm -f yarn.lock
 
-      - name: Install root dependencies
+      - name: Install dependencies
         run: |
           yarn config set nodeLinker node-modules
           yarn install
-          yarn add -W -D nx@21.0.3 @nrwl/cli@21.0.3 webpack@5.89.0 @rspack/core@1.1.5 @swc/types@0.1.0 eslint@8.56.0
+          yarn add -W -D @nx/next@latest @nx/react@latest @nx/workspace@latest nx@latest webpack@5.89.0 @rspack/core@1.1.5 @swc/types@0.1.0 eslint@8.56.0
           yarn add -W date-fns@3.3.1
 
-      - name: Install workspace dependencies
+      - name: Build web application
         run: |
-          yarn workspace @healthcare/web add -D nx@21.0.3 @nrwl/cli@21.0.3
-          yarn workspace @healthcare/web add date-fns@3.3.1
-
-      - name: Install Nx globally
-        run: yarn global add nx@21.0.3
+          yarn nx build web --prod
+          yarn nx export web || (cd apps/web && yarn next export)
 
       - name: Create production env file
         run: |
@@ -70,11 +67,6 @@ jobs:
           NEXT_PUBLIC_DOMAIN=${{ env.SERVER_HOST }}
           NODE_ENV=production
           EOL
-
-      - name: Build web application
-        run: |
-          npx nx build web
-          npx nx export web || yarn next export
 
       - name: Create deployment package
         run: |
