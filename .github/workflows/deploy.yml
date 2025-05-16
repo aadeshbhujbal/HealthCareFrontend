@@ -53,16 +53,6 @@ jobs:
         run: |
           yarn config set nodeLinker node-modules
           yarn install --frozen-lockfile
-          yarn add -W -D @nx/js@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1 @nx/workspace@20.6.1 nx@20.6.1
-          yarn add -W -D webpack@5.89.0 @rspack/core@1.1.5 @swc/types@0.1.0 eslint@9.0.0
-          yarn add -W -D tailwindcss@3.3.5 @nuxt/critters@0.0.20
-          yarn add -W date-fns@3.3.1
-
-      - name: Install workspace dependencies
-        working-directory: apps/web
-        run: |
-          yarn add -D critters@0.0.20
-          yarn add @beasties/critters@1.0.0
 
       - name: Create production env file
         run: |
@@ -100,7 +90,11 @@ jobs:
               return config;
             },
             experimental: {
-              optimizeCss: true,
+              optimizeCss: {
+                enabled: true,
+                cssModules: true,
+                minify: true,
+              },
               scrollRestoration: true,
             },
             compress: true,
