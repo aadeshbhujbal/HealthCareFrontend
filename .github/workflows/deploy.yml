@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'HealthcareFrontend/HealthCareFrontend-Web/**'
-      - 'HealthcareFrontend/HealthCareFrontend-Shared/**'
+      - '.github/workflows/deploy.yml'
 
 env:
   SERVER_HOST: ishswami.in
@@ -48,7 +48,7 @@ jobs:
           echo "VITE_API_URL=https://api.ishswami.in" > .env.production
 
       - name: Build
-        run: npx nx build web --prod
+        run: npm run build
 
       - name: Setup SSH
         run: |
@@ -66,10 +66,8 @@ jobs:
           ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ${RELEASE_DIR}"
 
           # Upload the build
-          if [ -d "dist/apps/web/exported" ]; then
-            scp -i ~/.ssh/deploy_key -r dist/apps/web/exported/* ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${RELEASE_DIR}
-          elif [ -d "dist/apps/web" ]; then
-            scp -i ~/.ssh/deploy_key -r dist/apps/web/* ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${RELEASE_DIR}
+          if [ -d "dist" ]; then
+            scp -i ~/.ssh/deploy_key -r dist/* ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${RELEASE_DIR}
           else
             echo "Build output directory not found"
             exit 1
