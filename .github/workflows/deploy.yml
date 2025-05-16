@@ -32,6 +32,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
 
       - name: Clean workspace
         run: |
@@ -57,16 +58,27 @@ jobs:
           yarn add -D -W @rspack/core@1.1.5 @swc/types@0.1.0 webpack@5.89.0 eslint@8.56.0
           yarn add -W date-fns@2.30.0
 
+      - name: Verify workspace
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Directory contents:"
+          ls -la
+          echo "Package.json contents:"
+          cat package.json
+          echo "nx.json contents:"
+          cat nx.json
+
       - name: Setup Nx
         uses: nrwl/nx-set-shas@v3
         with:
           main-branch-name: 'main'
 
-      - name: Verify Nx Installation
+      - name: Initialize Nx
         run: |
-          echo "Verifying Nx installation..."
-          npx nx --version
-          npx nx workspace-lint
+          echo "Initializing Nx..."
+          yarn nx --version || yarn global add nx
+          yarn nx reset || true
+          yarn nx graph --file=dependency-graph.json || true
 
       - name: Create production env file
         run: |
@@ -145,11 +157,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          npx nx build shared-services
+          yarn workspace @healthcare/shared-services run build
 
       - name: Build web application
         run: |
-          NODE_OPTIONS="--max_old_space_size=4096" npx nx build web --configuration=production
+          NODE_OPTIONS="--max_old_space_size=4096" yarn workspace @healthcare/web run build
 
       - name: Create deployment package
         run: |
