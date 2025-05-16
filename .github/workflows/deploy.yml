@@ -17,6 +17,7 @@ env:
   NODE_ENV: production
   NX_BRANCH: ${{ github.event.number }}
   NX_RUN_GROUP: ${{ github.run_id }}
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
   build-and-deploy:
@@ -38,17 +39,23 @@ jobs:
           corepack prepare yarn@1.22.22 --activate
           yarn --version
 
-      - name: Clean package manager files
-        run: |
-          rm -f package-lock.json
-          rm -f yarn.lock
-
-      - name: Install dependencies
+      - name: Install root dependencies
         run: |
           yarn config set nodeLinker node-modules
-          yarn install
+          yarn install --frozen-lockfile
           yarn add -W -D @nx/js@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1 @nx/workspace@20.6.1 nx@20.6.1
-          yarn add -W critters@0.0.20
+          yarn add -W -D webpack@5.89.0 @rspack/core@1.1.5 @swc/types@0.1.0 eslint@8.56.0
+          yarn add -W -D @module-federation/enhanced@0.9.1 @module-federation/rspack@0.9.1
+          yarn add -W date-fns@3.3.1
+
+      - name: Install workspace dependencies
+        run: |
+          cd apps/web
+          yarn add -D critters@0.0.20
+          cd ../..
+          cd shared/services
+          yarn install --frozen-lockfile
+          cd ../..
 
       - name: Create production env file
         run: |
@@ -76,6 +83,11 @@ jobs:
               unoptimized: true,
             },
             trailingSlash: true,
+            poweredByHeader: false,
+            compress: true,
+            generateEtags: true,
+            reactStrictMode: true,
+            swcMinify: true,
           };
 
           module.exports = withNx(nextConfig);
@@ -83,11 +95,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          npx nx build shared-services
+          yarn nx build shared-services
 
       - name: Build web application
         run: |
-          npx nx build web --skip-nx-cache
+          yarn nx build web --configuration=production
 
       - name: Create deployment package
         run: |
@@ -105,6 +117,21 @@ jobs:
             exit 1
           fi
 
+      - name: Optimize assets
+        run: |
+          if [ -d "deployment" ]; then
+            # Install optimization tools
+            npm install -g svgo
+            
+            # Optimize SVGs
+            find deployment -name "*.svg" -exec svgo {} \;
+            
+            # Compress static assets
+            find deployment -type f -name "*.js" -exec gzip -k {} \;
+            find deployment -type f -name "*.css" -exec gzip -k {} \;
+            find deployment -type f -name "*.html" -exec gzip -k {} \;
+          fi
+
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
@@ -112,7 +139,7 @@ jobs:
           username: ${{ env.SERVER_USER }}
           key: ${{ env.SERVER_SSH_KEY }}
           script: |
-            # Create deployment directory
+            # Create deployment directory with timestamp
             mkdir -p ${{ env.DEPLOY_PATH }}/deployments
             cd ${{ env.DEPLOY_PATH }}/deployments
             timestamp=$(date +%Y%m%d_%H%M%S)
@@ -148,22 +175,16 @@ jobs:
             # Verify deployment
             if [ -f "${{ env.DEPLOY_PATH }}/current/index.html" ]; then
               echo "Deployment successful - index.html found"
+              
+              # Clean old deployments but keep last 5
+              cd deployments
+              ls -t | tail -n +6 | xargs -r rm -rf
+              
               exit 0
             else
               echo "Deployment failed - index.html not found"
               exit 1
             fi
-
-      - name: Cleanup old deployments
-        if: success()
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: ${{ env.SERVER_USER }}
-          key: ${{ env.SERVER_SSH_KEY }}
-          script: |
-            cd ${{ env.DEPLOY_PATH }}/deployments
-            ls -t | tail -n +6 | xargs -r rm -rf
 
   rollback:
     if: failure()
