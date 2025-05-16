@@ -15,8 +15,6 @@ env:
   SERVER_IP: 82.208.20.16
   API_DOMAIN: api.ishswami.in
   NODE_ENV: production
-  NX_BRANCH: ${{ github.event.number }}
-  NX_RUN_GROUP: ${{ github.run_id }}
 
 jobs:
   build-and-deploy:
@@ -39,39 +37,22 @@ jobs:
           corepack prepare yarn@1.22.22 --activate
           yarn --version
 
+      - uses: nrwl/nx-set-shas@v3
+        with:
+          main-branch-name: 'main'
+
       - name: Install dependencies
         run: |
           yarn config set nodeLinker node-modules
           yarn install --frozen-lockfile
 
-      - name: Install Nx packages
+      - name: Initialize Nx workspace
         run: |
-          echo "Installing Nx packages..."
-          npm install -g nx@20.6.1
-          yarn add -W -D @nx/js@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1 @nx/workspace@20.6.1 nx@20.6.1
-          yarn add -W -D @rspack/core@1.1.5 @swc/types@0.1.0 webpack@5.89.0
-          yarn add -W -D eslint@8.56.0 typescript@5.7.2
-          yarn add -W date-fns@2.30.0
-
-      - name: Verify Nx setup
-        run: |
-          echo "Verifying Nx setup..."
-          echo "Current directory: $(pwd)"
-          echo "Directory contents:"
-          ls -la
-          echo "node_modules/.bin contents:"
-          ls -la node_modules/.bin
-          echo "Package.json contents:"
-          cat package.json
-          echo "nx.json contents:"
-          cat nx.json
-          echo "Nx version:"
-          npx nx --version
-
-      - name: Setup Nx
-        uses: nrwl/nx-set-shas@v3
-        with:
-          main-branch-name: 'main'
+          echo "Initializing Nx workspace..."
+          yarn add -D -W @nrwl/cli@20.6.1
+          yarn add -D -W @nrwl/workspace@20.6.1
+          yarn add -D -W nx@20.6.1
+          yarn nx --version
 
       - name: Create production env file
         run: |
@@ -150,11 +131,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          npx nx build shared-services
+          yarn nx run shared-services:build
 
       - name: Build web application
         run: |
-          NODE_OPTIONS="--max_old_space_size=4096" npx nx build web --configuration=production
+          NODE_OPTIONS="--max_old_space_size=4096" yarn nx run web:build --configuration=production
 
       - name: Create deployment package
         run: |
