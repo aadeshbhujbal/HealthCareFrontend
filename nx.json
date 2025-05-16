@@ -11,9 +11,7 @@
           "build",
           "lint",
           "test",
-          "e2e",
-          "build:android",
-          "build:ios"
+          "e2e"
         ]
       }
     }
@@ -52,19 +50,6 @@
         "buildTargetName": "build",
         "devTargetName": "dev",
         "startTargetName": "start"
-      }
-    },
-    {
-      "plugin": "@nx/expo/plugin",
-      "options": {
-        "startTargetName": "start",
-        "serveTargetName": "serve",
-        "buildTargetName": "build",
-        "buildAndroidTargetName": "build:android",
-        "buildIosTargetName": "build:ios",
-        "iosTargetName": "ios",
-        "androidTargetName": "android",
-        "webTargetName": "web"
       }
     }
   ]

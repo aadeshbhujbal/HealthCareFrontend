@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 import {
   AuthResponse,
   LoginCredentials,
@@ -11,7 +11,7 @@ import {
 
 export class AuthAPI {
   private static instance: AuthAPI;
-  private api: AxiosInstance;
+  private api: any;
 
   private constructor(baseURL: string) {
     this.api = axios.create({
@@ -25,7 +25,7 @@ export class AuthAPI {
 
     // Add request interceptor for logging
     this.api.interceptors.request.use(
-      (config) => {
+      (config: any) => {
         console.log(`Making ${config.method?.toUpperCase()} request to ${config.url}`);
         // Add authorization header if token exists
         const token = localStorage.getItem('accessToken');
@@ -34,7 +34,7 @@ export class AuthAPI {
         }
         return config;
       },
-      (error) => {
+      (error: any) => {
         console.error('Request setup error:', error);
         return Promise.reject(error);
       }
@@ -42,8 +42,8 @@ export class AuthAPI {
 
     // Add response interceptor for error handling
     this.api.interceptors.response.use(
-      (response) => response,
-      async (error) => {
+      (response: any) => response,
+      async (error: any) => {
         console.error('API Error:', {
           status: error.response?.status,
           data: error.response?.data,
@@ -71,17 +71,17 @@ export class AuthAPI {
 
   // Authentication methods
   public async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await this.api.post<AuthResponse>('/auth/login', credentials);
+    const response = await this.api.post('/auth/login', credentials);
     return response.data;
   }
 
   public async register(data: RegisterData): Promise<User> {
-    const response = await this.api.post<User>('/auth/register', data);
+    const response = await this.api.post('/auth/register', data);
     return response.data;
   }
 
   public async registerWithClinic(data: RegisterData, appName: string): Promise<User> {
-    const response = await this.api.post<User>('/auth/register-with-clinic', { ...data, appName });
+    const response = await this.api.post('/auth/register-with-clinic', { ...data, appName });
     return response.data;
   }
 
@@ -90,7 +90,7 @@ export class AuthAPI {
   }
 
   public async refreshToken(refreshToken: string): Promise<AuthResponse> {
-    const response = await this.api.post<AuthResponse>('/auth/refresh', { refreshToken });
+    const response = await this.api.post('/auth/refresh', { refreshToken });
     return response.data;
   }
 
@@ -101,18 +101,18 @@ export class AuthAPI {
 
   // Password reset methods
   public async forgotPassword(email: string): Promise<{ message: string }> {
-    const response = await this.api.post<{ message: string }>('/auth/forgot-password', { email });
+    const response = await this.api.post('/auth/forgot-password', { email });
     return response.data;
   }
 
   public async resetPassword(data: PasswordReset): Promise<{ message: string }> {
-    const response = await this.api.post<{ message: string }>('/auth/reset-password', data);
+    const response = await this.api.post('/auth/reset-password', data);
     return response.data;
   }
 
   // OTP methods
   public async requestOTP(data: OTPRequest): Promise<{ success: boolean; message: string }> {
-    const response = await this.api.post<{ success: boolean; message: string }>('/auth/request-otp', data);
+    const response = await this.api.post('/auth/request-otp', data);
     return response.data;
   }
 
@@ -120,7 +120,7 @@ export class AuthAPI {
     try {
       console.log('Sending OTP verification request:', { email, otp: '******' });
       
-      const response = await this.api.post<AuthResponse>('/auth/verify-otp', { 
+      const response = await this.api.post('/auth/verify-otp', { 
         email, 
         otp,
         type: 'login' // Specify that this is a login OTP verification
@@ -181,29 +181,29 @@ export class AuthAPI {
   }
 
   public async checkOTPStatus(email: string): Promise<{ hasActiveOTP: boolean }> {
-    const response = await this.api.post<{ hasActiveOTP: boolean }>('/auth/check-otp-status', { email });
+    const response = await this.api.post('/auth/check-otp-status', { email });
     return response.data;
   }
 
   public async invalidateOTP(email: string): Promise<{ message: string }> {
-    const response = await this.api.post<{ message: string }>('/auth/invalidate-otp', { email });
+    const response = await this.api.post('/auth/invalidate-otp', { email });
     return response.data;
   }
 
   // Magic link methods
   public async requestMagicLink(email: string): Promise<{ message: string }> {
-    const response = await this.api.post<{ message: string }>('/auth/magic-link', { email });
+    const response = await this.api.post('/auth/magic-link', { email });
     return response.data;
   }
 
   public async verifyMagicLink(token: string): Promise<AuthResponse> {
-    const response = await this.api.post<AuthResponse>('/auth/verify-magic-link', { token });
+    const response = await this.api.post('/auth/verify-magic-link', { token });
     return response.data;
   }
 
   // Social login methods
   public async socialLogin(data: SocialLoginData): Promise<AuthResponse> {
-    const response = await this.api.post<AuthResponse>(`/auth/social/${data.provider}`, data);
+    const response = await this.api.post(`/auth/social/${data.provider}`, data);
     return response.data;
   }
 } 

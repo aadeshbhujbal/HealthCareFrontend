@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useAuth } from '@/app/providers/AuthProvider';
 
-export default function VerifyOTPPage() {
+function VerifyOTPContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { authService } = useAuth();
@@ -205,5 +205,21 @@ export default function VerifyOTPPage() {
         </form>
       </CardContent>
     </Card>
+  );
+}
+
+export default function VerifyOTPPage() {
+  return (
+    <Suspense
+      fallback={
+        <Card className="w-full max-w-md mx-auto">
+          <CardHeader>
+            <h2 className="text-2xl font-bold text-center">Loading...</h2>
+          </CardHeader>
+        </Card>
+      }
+    >
+      <VerifyOTPContent />
+    </Suspense>
   );
 }
