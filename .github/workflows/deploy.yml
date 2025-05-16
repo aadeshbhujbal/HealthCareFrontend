@@ -51,8 +51,17 @@ jobs:
         run: |
           echo "Initializing Nx workspace..."
           npm install -g nx@20.6.1
+          npm install --save-dev @nx/workspace@20.6.1 nx@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1
+          npm install --save-dev @nx/js@20.6.1 @nx/node@20.6.1
           nx --version
           nx reset
+
+      - name: Verify workspace
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la
+          cat nx.json
+          cat package.json
 
       - name: Create production env file
         run: |
@@ -131,11 +140,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          nx build shared-services
+          npx nx build shared-services --verbose
 
       - name: Build web application
         run: |
-          NODE_OPTIONS="--max_old_space_size=4096" nx build web --configuration=production
+          NODE_OPTIONS="--max_old_space_size=4096" npx nx build web --configuration=production --verbose
 
       - name: Create deployment package
         run: |
