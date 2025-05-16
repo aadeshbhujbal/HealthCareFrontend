@@ -55,11 +55,6 @@ jobs:
           yarn add -W -D @nx/next@latest @nx/react@latest @nx/workspace@latest nx@latest webpack@5.89.0 @rspack/core@1.1.5 @swc/types@0.1.0 eslint@8.56.0
           yarn add -W date-fns@3.3.1
 
-      - name: Build web application
-        run: |
-          yarn nx build web --prod
-          yarn nx export web || (cd apps/web && yarn next export)
-
       - name: Create production env file
         run: |
           cat > apps/web/.env.production << EOL
@@ -68,6 +63,11 @@ jobs:
           NODE_ENV=production
           EOL
 
+      - name: Build web application
+        run: |
+          npx nx build web --configuration=production
+          npx nx export web || (cd apps/web && npx next export)
+
       - name: Create deployment package
         run: |
           mkdir -p deployment
@@ -75,6 +75,8 @@ jobs:
             cp -r dist/apps/web/exported/* deployment/
           elif [ -d "apps/web/out" ]; then
             cp -r apps/web/out/* deployment/
+          elif [ -d "dist/apps/web/.next" ]; then
+            cp -r dist/apps/web/.next/* deployment/
           else
             echo "Could not find build output directory"
             exit 1
