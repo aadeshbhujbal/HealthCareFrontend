@@ -33,29 +33,36 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Clean workspace
+        run: |
+          rm -rf node_modules
+          rm -rf apps/web/node_modules
+          rm -rf shared/services/node_modules
+          rm -f package-lock.json
+          rm -f yarn.lock
+          rm -f apps/web/package-lock.json
+          rm -f shared/services/package-lock.json
+
       - name: Install Yarn
         run: |
           corepack enable
           corepack prepare yarn@1.22.22 --activate
           yarn --version
 
-      - name: Install root dependencies
+      - name: Install dependencies
         run: |
           yarn config set nodeLinker node-modules
           yarn install --frozen-lockfile
           yarn add -W -D @nx/js@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1 @nx/workspace@20.6.1 nx@20.6.1
-          yarn add -W -D webpack@5.89.0 @rspack/core@1.1.5 @swc/types@0.1.0 eslint@8.56.0
-          yarn add -W -D @module-federation/enhanced@0.9.1 @module-federation/rspack@0.9.1
+          yarn add -W -D webpack@5.89.0 @rspack/core@1.1.5 @swc/types@0.1.0 eslint@9.0.0
+          yarn add -W -D tailwindcss@3.3.5
           yarn add -W date-fns@3.3.1
 
       - name: Install workspace dependencies
+        working-directory: apps/web
         run: |
-          cd apps/web
           yarn add -D critters@0.0.20
-          cd ../..
-          cd shared/services
-          yarn install --frozen-lockfile
-          cd ../..
+          yarn add @beasties/critters@1.0.0
 
       - name: Create production env file
         run: |
@@ -75,8 +82,9 @@ jobs:
               svgr: false,
             },
             experimental: {
-              optimizeCss: false,
+              optimizeCss: true,
               scrollRestoration: true,
+              swcMinify: true,
             },
             output: 'export',
             images: {
@@ -87,7 +95,6 @@ jobs:
             compress: true,
             generateEtags: true,
             reactStrictMode: true,
-            swcMinify: true,
           };
 
           module.exports = withNx(nextConfig);
@@ -95,11 +102,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          yarn nx build shared-services
+          npx nx build shared-services
 
       - name: Build web application
         run: |
-          yarn nx build web --configuration=production
+          npx nx build web --configuration=production
 
       - name: Create deployment package
         run: |
