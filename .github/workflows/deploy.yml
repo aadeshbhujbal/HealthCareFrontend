@@ -41,27 +41,42 @@ jobs:
         with:
           main-branch-name: 'main'
 
-      - name: Install dependencies
-        run: |
-          yarn config set nodeLinker node-modules
-          rm -f package-lock.json
-          yarn install --frozen-lockfile
-
       - name: Initialize Nx workspace
         run: |
           echo "Initializing Nx workspace..."
-          npm install -g nx@20.6.1
-          npm install --save-dev @nx/workspace@20.6.1 nx@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1
-          npm install --save-dev @nx/js@20.6.1 @nx/node@20.6.1
-          nx --version
-          nx reset
+          # Create a temporary directory for the new workspace
+          mkdir -p temp_workspace
+          cd temp_workspace
+
+          # Create new Nx workspace
+          npx create-nx-workspace@20.6.1 temp-workspace --preset=next --nxCloud=false --packageManager=yarn --style=css --no-interactive
+
+          # Copy our files into the new workspace
+          cd ..
+          cp -r apps/* temp_workspace/apps/
+          cp -r shared/* temp_workspace/shared/
+          cp package.json temp_workspace/
+          cp nx.json temp_workspace/
+
+          # Move to new workspace
+          rm -rf apps shared package.json nx.json node_modules yarn.lock
+          mv temp_workspace/* .
+          mv temp_workspace/.* . 2>/dev/null || true
+          rmdir temp_workspace
+
+          # Install dependencies
+          yarn install --frozen-lockfile
 
       - name: Verify workspace
         run: |
           echo "Current directory: $(pwd)"
           ls -la
+          echo "nx.json contents:"
           cat nx.json
+          echo "package.json contents:"
           cat package.json
+          echo "Nx version:"
+          yarn nx --version
 
       - name: Create production env file
         run: |
@@ -140,11 +155,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          npx nx build shared-services --verbose
+          yarn nx build shared-services --verbose
 
       - name: Build web application
         run: |
-          NODE_OPTIONS="--max_old_space_size=4096" npx nx build web --configuration=production --verbose
+          NODE_OPTIONS="--max_old_space_size=4096" yarn nx build web --configuration=production --verbose
 
       - name: Create deployment package
         run: |
