@@ -17,7 +17,6 @@ env:
   NODE_ENV: production
   NX_BRANCH: ${{ github.event.number }}
   NX_RUN_GROUP: ${{ github.run_id }}
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
   build-and-deploy:
@@ -34,16 +33,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
 
-      - name: Clean workspace
-        run: |
-          rm -rf node_modules
-          rm -rf apps/web/node_modules
-          rm -rf shared/services/node_modules
-          rm -f package-lock.json
-          rm -f yarn.lock
-          rm -f apps/web/package-lock.json
-          rm -f shared/services/package-lock.json
-
       - name: Install Yarn
         run: |
           corepack enable
@@ -54,9 +43,11 @@ jobs:
         run: |
           yarn config set nodeLinker node-modules
           yarn install --frozen-lockfile
-          yarn add -D -W @nx/js@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1 @nx/workspace@20.6.1 nx@20.6.1
-          yarn add -D -W @rspack/core@1.1.5 @swc/types@0.1.0 webpack@5.89.0 eslint@8.56.0
-          yarn add -W date-fns@2.30.0
+
+      - name: Install Nx CLI
+        run: |
+          npm install -g nx@20.6.1
+          nx --version
 
       - name: Verify workspace
         run: |
@@ -72,13 +63,6 @@ jobs:
         uses: nrwl/nx-set-shas@v3
         with:
           main-branch-name: 'main'
-
-      - name: Initialize Nx
-        run: |
-          echo "Initializing Nx..."
-          yarn nx --version || yarn global add nx
-          yarn nx reset || true
-          yarn nx graph --file=dependency-graph.json || true
 
       - name: Create production env file
         run: |
@@ -157,11 +141,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          yarn workspace @healthcare/shared-services run build
+          nx build shared-services
 
       - name: Build web application
         run: |
-          NODE_OPTIONS="--max_old_space_size=4096" yarn workspace @healthcare/web run build
+          NODE_OPTIONS="--max_old_space_size=4096" nx build web --configuration=production
 
       - name: Create deployment package
         run: |
