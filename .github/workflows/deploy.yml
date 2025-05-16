@@ -33,13 +33,19 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
 
+      - name: Clean package lock files
+        run: |
+          rm -f package-lock.json
+          rm -f yarn.lock
+
       - name: Install dependencies
         run: |
           yarn install --frozen-lockfile
-          yarn add -D nx@latest @nrwl/cli@latest
+          yarn workspace @healthcare/web add nx@latest @nrwl/cli@latest --dev
+          yarn add -W -D eslint@^8.0.0 webpack@^5.1.0 @rspack/core@^1.1.5 @swc/types@^0.1.0 date-fns@^3.0.0
 
       - name: Install Nx globally
-        run: npm install -g nx
+        run: yarn global add nx
 
       - name: Create production env file
         run: |
