@@ -54,14 +54,19 @@ jobs:
           yarn config set nodeLinker node-modules
           yarn install --frozen-lockfile
           yarn add -D -W @nx/js@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1 @nx/workspace@20.6.1 nx@20.6.1
-          yarn add -D -W @rspack/core@1.1.5 @swc/types@0.1.0
+          yarn add -D -W @rspack/core@1.1.5 @swc/types@0.1.0 webpack@5.89.0 eslint@8.56.0
           yarn add -W date-fns@2.30.0
 
       - name: Setup Nx
+        uses: nrwl/nx-set-shas@v3
+        with:
+          main-branch-name: 'main'
+
+      - name: Verify Nx Installation
         run: |
-          echo "Setting up Nx..."
-          yarn nx --version
-          yarn nx reset
+          echo "Verifying Nx installation..."
+          npx nx --version
+          npx nx workspace-lint
 
       - name: Create production env file
         run: |
@@ -140,11 +145,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          yarn nx build shared-services
+          npx nx build shared-services
 
       - name: Build web application
         run: |
-          NODE_OPTIONS="--max_old_space_size=4096" yarn nx build web --configuration=production
+          NODE_OPTIONS="--max_old_space_size=4096" npx nx build web --configuration=production
 
       - name: Create deployment package
         run: |
