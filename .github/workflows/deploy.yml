@@ -13,34 +13,42 @@ env:
   SERVER_USER: ubuntu
   FRONTEND_DEPLOY_PATH: /var/www/healthcare/frontend
   NODE_VERSION: '18.x'
+  WORKING_DIRECTORY: HealthcareFrontend/HealthCareFrontend-Web
 
 jobs:
   deploy:
     name: Deploy Frontend
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+          cache-dependency-path: ${{ env.WORKING_DIRECTORY }}/package-lock.json
 
       - name: Install dependencies
         run: npm ci
-        working-directory: HealthcareFrontend/HealthCareFrontend-Web
+
+      - name: Install nx globally
+        run: npm install -g nx
 
       - name: Create production env file
         run: |
           echo "VITE_API_URL=https://api.ishswami.in" > .env.production
-        working-directory: HealthcareFrontend/HealthCareFrontend-Web
 
       - name: Build
-        run: npm run build
-        working-directory: HealthcareFrontend/HealthCareFrontend-Web
+        run: npx nx build web --prod
 
       - name: Setup SSH
         run: |
@@ -51,16 +59,26 @@ jobs:
 
       - name: Deploy to server
         run: |
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          RELEASE_DIR="${{ env.FRONTEND_DEPLOY_PATH }}/releases/${TIMESTAMP}"
+
           # Create a new release directory
-          ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ${{ env.FRONTEND_DEPLOY_PATH }}/releases/$(date +%Y%m%d_%H%M%S)"
+          ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ${RELEASE_DIR}"
 
           # Upload the build
-          scp -i ~/.ssh/deploy_key -r HealthcareFrontend/HealthCareFrontend-Web/dist/* ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.FRONTEND_DEPLOY_PATH }}/releases/$(date +%Y%m%d_%H%M%S)
+          if [ -d "dist/apps/web/exported" ]; then
+            scp -i ~/.ssh/deploy_key -r dist/apps/web/exported/* ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${RELEASE_DIR}
+          elif [ -d "dist/apps/web" ]; then
+            scp -i ~/.ssh/deploy_key -r dist/apps/web/* ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${RELEASE_DIR}
+          else
+            echo "Build output directory not found"
+            exit 1
+          fi
 
           # Update the current symlink
           ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "cd ${{ env.FRONTEND_DEPLOY_PATH }} && \
             rm -f current && \
-            ln -s releases/$(date +%Y%m%d_%H%M%S) current"
+            ln -s releases/${TIMESTAMP} current"
 
           # Keep only the last 5 releases
           ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "cd ${{ env.FRONTEND_DEPLOY_PATH }}/releases && \
@@ -70,3 +88,29 @@ jobs:
         run: |
           # Check if index.html exists in the new deployment
           ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "test -f ${{ env.FRONTEND_DEPLOY_PATH }}/current/index.html"
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          # Get the previous release
+          PREVIOUS_RELEASE=$(ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "ls -1t ${{ env.FRONTEND_DEPLOY_PATH }}/releases | sed -n 2p")
+
+          if [ ! -z "$PREVIOUS_RELEASE" ]; then
+            echo "Rolling back to previous release: $PREVIOUS_RELEASE"
+            
+            # Switch to previous release
+            ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "cd ${{ env.FRONTEND_DEPLOY_PATH }} && \
+              rm -f current && \
+              ln -s releases/${PREVIOUS_RELEASE} current"
+            
+            # Verify rollback
+            if ssh -i ~/.ssh/deploy_key ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "test -f ${{ env.FRONTEND_DEPLOY_PATH }}/current/index.html"; then
+              echo "Rollback successful"
+            else
+              echo "Rollback failed - index.html not found"
+              exit 1
+            fi
+          else
+            echo "No previous release found for rollback"
+            exit 1
+          fi
