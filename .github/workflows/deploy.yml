@@ -83,11 +83,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          yarn nx build shared-services
+          npx nx build shared-services
 
       - name: Build web application
         run: |
-          yarn nx build web --skip-nx-cache
+          npx nx build web --skip-nx-cache
 
       - name: Create deployment package
         run: |
