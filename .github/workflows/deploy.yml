@@ -55,7 +55,7 @@ jobs:
           yarn install --frozen-lockfile
           yarn add -W -D @nx/js@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1 @nx/workspace@20.6.1 nx@20.6.1
           yarn add -W -D webpack@5.89.0 @rspack/core@1.1.5 @swc/types@0.1.0 eslint@9.0.0
-          yarn add -W -D tailwindcss@3.3.5
+          yarn add -W -D tailwindcss@3.3.5 @danielroe/beasties@1.0.0
           yarn add -W date-fns@3.3.1
 
       - name: Install workspace dependencies
@@ -77,12 +77,18 @@ jobs:
           cat > apps/web/next.config.js << EOL
           const { withNx } = require('@nx/next');
 
+          /** @type {import('next').NextConfig} */
           const nextConfig = {
             nx: {
               svgr: false,
             },
             experimental: {
-              optimizeCss: true,
+              optimizeCss: {
+                enabled: true,
+                cssModules: true,
+                minify: true,
+                inlineThreshold: 4096,
+              },
               scrollRestoration: true,
               swcMinify: true,
             },
@@ -95,6 +101,14 @@ jobs:
             compress: true,
             generateEtags: true,
             reactStrictMode: true,
+            webpack: (config, { dev, isServer }) => {
+              if (!dev && !isServer) {
+                Object.assign(config.resolve.alias, {
+                  'critters': '@danielroe/beasties'
+                });
+              }
+              return config;
+            }
           };
 
           module.exports = withNx(nextConfig);
