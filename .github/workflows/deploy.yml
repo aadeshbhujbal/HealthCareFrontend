@@ -55,7 +55,7 @@ jobs:
           yarn install --frozen-lockfile
           yarn add -W -D @nx/js@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1 @nx/workspace@20.6.1 nx@20.6.1
           yarn add -W -D webpack@5.89.0 @rspack/core@1.1.5 @swc/types@0.1.0 eslint@9.0.0
-          yarn add -W -D tailwindcss@3.3.5 @danielroe/beasties@1.0.0
+          yarn add -W -D tailwindcss@3.3.5 @nuxt/critters@0.0.20
           yarn add -W date-fns@3.3.1
 
       - name: Install workspace dependencies
@@ -76,39 +76,60 @@ jobs:
         run: |
           cat > apps/web/next.config.js << EOL
           const { withNx } = require('@nx/next');
+          const path = require('path');
 
-          /** @type {import('next').NextConfig} */
+          /** @type {import('@nx/next/plugins/with-nx').WithNxOptions} */
           const nextConfig = {
             nx: {
               svgr: false,
             },
-            experimental: {
-              optimizeCss: {
-                enabled: true,
-                cssModules: true,
-                minify: true,
-                inlineThreshold: 4096,
-              },
-              scrollRestoration: true,
-              swcMinify: true,
-            },
-            output: 'export',
-            images: {
-              unoptimized: true,
-            },
-            trailingSlash: true,
-            poweredByHeader: false,
-            compress: true,
-            generateEtags: true,
-            reactStrictMode: true,
-            webpack: (config, { dev, isServer }) => {
-              if (!dev && !isServer) {
-                Object.assign(config.resolve.alias, {
-                  'critters': '@danielroe/beasties'
-                });
-              }
+            output: 'standalone',
+            distDir: '.next',
+            webpack: (config) => {
+              config.resolve.alias = {
+                ...config.resolve.alias,
+                '@healthcare/design-system': path.resolve(
+                  __dirname,
+                  '../../shared/design-system/src'
+                ),
+                '@healthcare/services': path.resolve(
+                  __dirname,
+                  '../../shared/services/src'
+                ),
+              };
               return config;
-            }
+            },
+            experimental: {
+              optimizeCss: true,
+              scrollRestoration: true,
+            },
+            compress: true,
+            poweredByHeader: false,
+            reactStrictMode: true,
+            generateEtags: true,
+            images: {
+              remotePatterns: [
+                {
+                  protocol: 'https',
+                  hostname: 'images.unsplash.com',
+                },
+                {
+                  protocol: 'https',
+                  hostname: 'lh3.googleusercontent.com',
+                },
+                {
+                  protocol: 'https',
+                  hostname: 'ishswami.in',
+                },
+                {
+                  protocol: 'https',
+                  hostname: 'api.ishswami.in',
+                },
+              ],
+              deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+              imageSizes: [16, 32, 48, 64, 96, 128, 256],
+              minimumCacheTTL: 60,
+            },
           };
 
           module.exports = withNx(nextConfig);
@@ -120,16 +141,12 @@ jobs:
 
       - name: Build web application
         run: |
-          npx nx build web --configuration=production
+          NODE_OPTIONS="--max_old_space_size=4096" npx nx build web --configuration=production
 
       - name: Create deployment package
         run: |
           mkdir -p deployment
-          if [ -d "dist/apps/web/exported" ]; then
-            cp -r dist/apps/web/exported/* deployment/
-          elif [ -d "apps/web/out" ]; then
-            cp -r apps/web/out/* deployment/
-          elif [ -d "dist/apps/web/.next" ]; then
+          if [ -d "dist/apps/web/.next" ]; then
             cp -r dist/apps/web/.next/* deployment/
           elif [ -d "apps/web/.next" ]; then
             cp -r apps/web/.next/* deployment/
