@@ -44,15 +44,16 @@ jobs:
       - name: Install dependencies
         run: |
           yarn config set nodeLinker node-modules
+          rm -f package-lock.json
           yarn install --frozen-lockfile
 
       - name: Initialize Nx workspace
         run: |
           echo "Initializing Nx workspace..."
-          yarn add -D -W @nrwl/cli@20.6.1
-          yarn add -D -W @nrwl/workspace@20.6.1
+          yarn add -D -W @nx/cli@20.6.1
+          yarn add -D -W @nx/workspace@20.6.1
           yarn add -D -W nx@20.6.1
-          yarn nx --version
+          yarn nx --version || npx nx --version
 
       - name: Create production env file
         run: |
@@ -131,11 +132,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          yarn nx run shared-services:build
+          npx nx build shared-services
 
       - name: Build web application
         run: |
-          NODE_OPTIONS="--max_old_space_size=4096" yarn nx run web:build --configuration=production
+          NODE_OPTIONS="--max_old_space_size=4096" npx nx build web --configuration=production
 
       - name: Create deployment package
         run: |
