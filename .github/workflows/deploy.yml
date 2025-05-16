@@ -47,6 +47,7 @@ jobs:
       - name: Install Nx packages
         run: |
           echo "Installing Nx packages..."
+          npm install -g nx@20.6.1
           yarn add -W -D @nx/js@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1 @nx/workspace@20.6.1 nx@20.6.1
           yarn add -W -D @rspack/core@1.1.5 @swc/types@0.1.0 webpack@5.89.0
           yarn add -W -D eslint@8.56.0 typescript@5.7.2
@@ -65,7 +66,7 @@ jobs:
           echo "nx.json contents:"
           cat nx.json
           echo "Nx version:"
-          yarn nx --version
+          npx nx --version
 
       - name: Setup Nx
         uses: nrwl/nx-set-shas@v3
@@ -149,11 +150,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          yarn nx build shared-services
+          npx nx build shared-services
 
       - name: Build web application
         run: |
-          NODE_OPTIONS="--max_old_space_size=4096" yarn nx build web --configuration=production
+          NODE_OPTIONS="--max_old_space_size=4096" npx nx build web --configuration=production
 
       - name: Create deployment package
         run: |
