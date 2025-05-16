@@ -48,6 +48,7 @@ jobs:
           yarn config set nodeLinker node-modules
           yarn install
           yarn add -W -D @nx/js@20.6.1 @nx/next@20.6.1 @nx/react@20.6.1 @nx/workspace@20.6.1 nx@20.6.1
+          yarn add -W critters@0.0.20
 
       - name: Create production env file
         run: |
@@ -57,14 +58,36 @@ jobs:
           NODE_ENV=production
           EOL
 
+      - name: Update Next.js config
+        run: |
+          cat > apps/web/next.config.js << EOL
+          const { withNx } = require('@nx/next');
+
+          const nextConfig = {
+            nx: {
+              svgr: false,
+            },
+            experimental: {
+              optimizeCss: false,
+              scrollRestoration: true,
+            },
+            output: 'export',
+            images: {
+              unoptimized: true,
+            },
+            trailingSlash: true,
+          };
+
+          module.exports = withNx(nextConfig);
+          EOL
+
       - name: Build shared services
         run: |
           yarn nx build shared-services
 
       - name: Build web application
         run: |
-          yarn nx build web
-          yarn nx export web || (cd apps/web && yarn next export)
+          yarn nx build web --skip-nx-cache
 
       - name: Create deployment package
         run: |
@@ -75,6 +98,8 @@ jobs:
             cp -r apps/web/out/* deployment/
           elif [ -d "dist/apps/web/.next" ]; then
             cp -r dist/apps/web/.next/* deployment/
+          elif [ -d "apps/web/.next" ]; then
+            cp -r apps/web/.next/* deployment/
           else
             echo "Could not find build output directory"
             exit 1
