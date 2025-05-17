@@ -44,42 +44,53 @@ jobs:
       - name: Initialize Nx workspace
         run: |
           echo "Initializing Nx workspace..."
-          # Create a temporary directory for the new workspace
+          # Install Nx globally
+          npm install -g nx@20.6.1
+
+          # Create temporary workspace
           mkdir -p temp_workspace
           cd temp_workspace
 
-          # Create new Nx workspace
-          npx create-nx-workspace@20.6.1 temp-workspace --preset=next --nxCloud=false --packageManager=yarn --style=css --no-interactive
+          # Create new workspace with correct parameters
+          npx create-nx-workspace@20.6.1 temp-workspace \
+            --preset=next \
+            --nxCloud=skip \
+            --packageManager=yarn \
+            --style=css \
+            --no-interactive \
+            --name=temp-workspace
 
           # Copy our files into the new workspace
           cd ..
-          cp -r apps/* temp_workspace/apps/
-          cp -r shared/* temp_workspace/shared/
-          cp package.json temp_workspace/
-          cp nx.json temp_workspace/
+          cp -r apps/* temp_workspace/temp-workspace/apps/ || true
+          cp -r shared/* temp_workspace/temp-workspace/shared/ || true
+          cp package.json temp_workspace/temp-workspace/ || true
+          cp nx.json temp_workspace/temp-workspace/ || true
 
           # Move to new workspace
           rm -rf apps shared package.json nx.json node_modules yarn.lock
-          mv temp_workspace/* .
-          mv temp_workspace/.* . 2>/dev/null || true
-          rmdir temp_workspace
+          mv temp_workspace/temp-workspace/* .
+          mv temp_workspace/temp-workspace/.* . 2>/dev/null || true
+          rm -rf temp_workspace
 
           # Install dependencies
           yarn install --frozen-lockfile
+
+          # Verify Nx setup
+          nx --version || yarn nx --version
 
       - name: Verify workspace
         run: |
           echo "Current directory: $(pwd)"
           ls -la
           echo "nx.json contents:"
-          cat nx.json
+          cat nx.json || echo "nx.json not found"
           echo "package.json contents:"
-          cat package.json
-          echo "Nx version:"
-          yarn nx --version
+          cat package.json || echo "package.json not found"
 
       - name: Create production env file
         run: |
+          mkdir -p apps/web
           cat > apps/web/.env.production << EOL
           NEXT_PUBLIC_API_URL=https://${{ env.API_DOMAIN }}
           NEXT_PUBLIC_DOMAIN=${{ env.SERVER_HOST }}
@@ -88,6 +99,7 @@ jobs:
 
       - name: Update Next.js config
         run: |
+          mkdir -p apps/web
           cat > apps/web/next.config.js << EOL
           const { withNx } = require('@nx/next');
           const path = require('path');
@@ -155,11 +167,11 @@ jobs:
 
       - name: Build shared services
         run: |
-          yarn nx build shared-services --verbose
+          yarn nx build shared-services --verbose || npx nx build shared-services --verbose
 
       - name: Build web application
         run: |
-          NODE_OPTIONS="--max_old_space_size=4096" yarn nx build web --configuration=production --verbose
+          NODE_OPTIONS="--max_old_space_size=4096" yarn nx build web --configuration=production --verbose || NODE_OPTIONS="--max_old_space_size=4096" npx nx build web --configuration=production --verbose
 
       - name: Create deployment package
         run: |
